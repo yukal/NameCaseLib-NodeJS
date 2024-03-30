@@ -78,7 +78,7 @@ class NCLNameCaseCore extends NCL {
          * @see Last
          * @var array
          */
-        this.workindLastCache = [];
+        this.workingLastCache = [];
 
         /**
          * The number of the last used rule. Set by the method Rule().
@@ -161,7 +161,7 @@ class NCLNameCaseCore extends NCL {
         this.workingWord = word;
 
         // Clear the cache
-        this.workindLastCache = [];
+        this.workingLastCache = [];
     }
 
     /**
@@ -194,13 +194,15 @@ class NCLNameCaseCore extends NCL {
             : undefined;
 
         // Check the cache
-        if (this.workindLastCache[length] == undefined)
-            this.workindLastCache[length] = [];
-        if (this.workindLastCache[length][stopAfter] == undefined) {
-            this.workindLastCache[length][stopAfter] = this.workingWord.slice(-length, cut);
+        if (this.workingLastCache[length] == undefined) {
+            this.workingLastCache[length] = [];
         }
 
-        return this.workindLastCache[length][stopAfter];
+        if (this.workingLastCache[length][stopAfter] == undefined) {
+            this.workingLastCache[length][stopAfter] = this.workingWord.slice(-length, cut);
+        }
+
+        return this.workingLastCache[length][stopAfter];
     }
 
     /**

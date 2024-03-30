@@ -645,13 +645,9 @@ class NCLNameCaseCore extends NCL {
     getFullNameFormat(fullname) {
         this.fullReset();
         var words = this.splitFullName(fullname);
-        var format = '';
 
-        for (var word of words) {
-            format += word.getNamePart() + ' ';
-        }
-
-        return format;
+        return words.map((w) => w.getNamePart())
+            .join(' ');
     }
 
     /**

@@ -202,7 +202,7 @@ export default class NCLNameCaseCore extends NCL {
             var ruleMethod = gender + 'Rule' + ruleID;
 
             if (typeof this[ruleMethod] != 'function')
-                throw new Exception("Method " + ruleMethod + " not found");
+                throw new Exception('Method ' + ruleMethod + ' not found');
             if (this[ruleMethod]()) {
                 return true;
             }
@@ -284,7 +284,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $firstname имя
      * @return NCLNameCaseCore
      */
-    setFirstName(firstname = "") {
+    setFirstName(firstname = '') {
         if (firstname) {
             var newWord = new NCLNameCaseWord(firstname);
             newWord.setNamePart('N');
@@ -302,7 +302,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $secondname фамилия
      * @return NCLNameCaseCore
      */
-    setSecondName(secondname = "") {
+    setSecondName(secondname = '') {
         if (secondname) {
             var newWord = new NCLNameCaseWord(secondname);
             newWord.setNamePart('S');
@@ -320,7 +320,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $fathername отчество
      * @return NCLNameCaseCore
      */
-    setFatherName(fathername = "") {
+    setFatherName(fathername = '') {
         if (fathername) {
             var newWord = new NCLNameCaseWord(fathername);
             newWord.setNamePart('F');
@@ -355,7 +355,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $fatherName отчество
      * @return NCLNameCaseCore
      */
-    setFullName(secondName = "", firstName = "", fatherName = "") {
+    setFullName(secondName = '', firstName = '', fatherName = '') {
         this.setFirstName(firstName);
         this.setSecondName(secondName);
         this.setFatherName(fatherName);
@@ -369,7 +369,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $firstname имя
      * @return NCLNameCaseCore
      */
-    setName(firstname = "") {
+    setName(firstname = '') {
         return this.setFirstName(firstname);
     }
 
@@ -379,7 +379,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $secondname фамилия
      * @return NCLNameCaseCore
      */
-    setLastName(secondname = "") {
+    setLastName(secondname = '') {
         return this.setSecondName(secondname);
     }
 
@@ -389,7 +389,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $secondname фамилия
      * @return NCLNameCaseCore
      */
-    setSirName(secondname = "") {
+    setSirName(secondname = '') {
         return this.setSecondName(secondname);
     }
 
@@ -399,7 +399,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     prepareNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         if (!word.getNamePart()) {
             this.detectNamePart(word);
@@ -421,7 +421,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     prepareGender(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         if (!word.isGenderSolved()) {
             var namePart = word.getNamePart();
@@ -599,7 +599,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     WordCase(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         var gender = (word.gender() == NCL.MAN ? 'man' : 'woman');
 
@@ -619,7 +619,7 @@ export default class NCLNameCaseCore extends NCL {
 
         var method = gender + namepart + 'Name';
         if (typeof this[method] != 'function')
-            throw new Exception("Method " + method + " not found");
+            throw new Exception('Method ' + method + ' not found');
 
         // если фамилия из 2х слов через дефис
         // http://new.gramota.ru/spravka/buro/search-answer?s=273912
@@ -723,7 +723,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     getWordCase(/*NCLNameCaseWord*/ word, number = null) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         var cases = word.getNameCases();
 
@@ -899,7 +899,7 @@ export default class NCLNameCaseCore extends NCL {
         cases['F'] = this.getCasesConnected(index['F']);
 
         for (var curCase = 0; curCase < this.CaseCount; curCase++) {
-            var line = "";
+            var line = '';
 
             for (var i = 0; i < length; i++) {
                 var symbol = NCLStr.substr(format, i, 1);
@@ -939,7 +939,7 @@ export default class NCLNameCaseCore extends NCL {
         }
 
         for (var curCase = 0; curCase < this.CaseCount; curCase++) {
-            var line = "";
+            var line = '';
 
             for (var value of cases) {
                 line += value[curCase] + ' ';
@@ -961,7 +961,7 @@ export default class NCLNameCaseCore extends NCL {
      * @return string строка в нужном падеже
      */
     getFormattedHard(caseNum = 0, format = []) {
-        var result = "";
+        var result = '';
 
         for (var word of format) {
             var cases = word.getNameCases();
@@ -980,7 +980,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $format строка с форматом
      * @return string строка в нужном падеже
      */
-    getFormatted(caseNum = 0, format = "S N F") {
+    getFormatted(caseNum = 0, format = 'S N F') {
         this.AllWordCases();
 
         // Если не указан падеж используем другую функцию
@@ -995,7 +995,7 @@ export default class NCLNameCaseCore extends NCL {
 
         } else {
             var length = NCLStr.strlen(format);
-            var result = "";
+            var result = '';
 
             for (var i = 0; i < length; i++) {
                 var symbol = NCLStr.substr(format, i, 1);
@@ -1029,7 +1029,7 @@ export default class NCLNameCaseCore extends NCL {
      * @param string $format формат
      * @return mixed либо массив со всеми падежами, либо строка
      */
-    qFullName(secondName = "", firstName = "", fatherName = "", gender = 0, caseNum = 0, format = "S N F") {
+    qFullName(secondName = '', firstName = '', fatherName = '', gender = 0, caseNum = 0, format = 'S N F') {
         this.fullReset();
         this.setFirstName(firstName);
         this.setSecondName(secondName);
@@ -1134,7 +1134,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
     }
 
     /**
@@ -1143,7 +1143,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
     }
 
     /**
@@ -1152,7 +1152,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
     }
 
     /**
@@ -1164,7 +1164,7 @@ export default class NCLNameCaseCore extends NCL {
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
     }
 
     /**

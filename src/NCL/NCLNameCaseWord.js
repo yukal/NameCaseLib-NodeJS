@@ -3,8 +3,8 @@
  * @package NameCaseLib
  */
 
-import NCLStr from "./NCLStr.js";
-import NCL from "./NCL.js";
+import NCLStr from './NCLStr.js';
+import NCL from './NCL.js';
 
 var math_min = require('locutus/php/math/min');
 var math_max = require('locutus/php/math/max');

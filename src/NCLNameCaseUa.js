@@ -47,19 +47,19 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
          * Список согласных украинского языка
          * @var string  
          */
-        this.consonant = "бвгджзйклмнпрстфхцчшщ";
+        this.consonant = 'бвгджзйклмнпрстфхцчшщ';
 
         /**
          * Українські шиплячі приголосні 
          * @var string 
          */
-        this.shyplyachi = "жчшщ";
+        this.shyplyachi = 'жчшщ';
 
         /**
          * Українські нешиплячі приголосні
          * @var string  
          */
-        this.neshyplyachi = "бвгдзклмнпрстфхц";
+        this.neshyplyachi = 'бвгдзклмнпрстфхц';
 
         /**
          * Українські завжди м’які звуки
@@ -662,7 +662,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -713,7 +713,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -741,7 +741,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -763,7 +763,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         var namepart = word.getWord();
         this.setWorkingWord(namepart);

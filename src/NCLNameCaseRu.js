@@ -41,13 +41,13 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
          * Список гласных русского языка
          * @var string 
          */
-        this.vowels = "аеёиоуыэюя";
+        this.vowels = 'аеёиоуыэюя';
 
         /**
          * Список согласных русского языка
          * @var string  
          */
-        this.consonant = "бвгджзйклмнпрстфхцчшщ";
+        this.consonant = 'бвгджзйклмнпрстфхцчшщ';
 
         /**
          * Окончания имен/фамилий, который не склоняются
@@ -126,7 +126,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
                 return true;
             }
 
-            if (this.Last(2, 1) != "и") {
+            if (this.Last(2, 1) != 'и') {
 
                 this.wordForms(this.workingWord, ['я', 'ю', 'я', 'ем', 'е'], 1);
                 this.Rule(102);
@@ -152,16 +152,16 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      */
     manRule2() {
         if (this.in(this.Last(1), this.consonant)) {
-            if (this.inNames(this.workingWord, "Павел")) {
+            if (this.inNames(this.workingWord, 'Павел')) {
 
-                this.lastResult = ["Павел", "Павла", "Павлу", "Павла", "Павлом", "Павле"];
+                this.lastResult = ['Павел', 'Павла', 'Павлу', 'Павла', 'Павлом', 'Павле'];
                 this.Rule(201);
 
                 return true;
 
-            } else if (this.inNames(this.workingWord, "Лев")) {
+            } else if (this.inNames(this.workingWord, 'Лев')) {
 
-                this.lastResult = ["Лев", "Льва", "Льву", "Льва", "Львом", "Льве"];
+                this.lastResult = ['Лев', 'Льва', 'Льву', 'Льва', 'Львом', 'Льве'];
                 this.Rule(202);
 
                 return true;
@@ -194,7 +194,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет. 
      */
     manRule3() {
-        if (this.Last(1) == "а") {
+        if (this.Last(1) == 'а') {
             if (this.inNames(this.workingWord, ['фра', 'Дега', 'Андреа', 'Сёра', 'Сера'])) {
 
                 this.Rule(301);
@@ -217,7 +217,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
                 return true;
 
             }
-        } else if (this.Last(1) == "я") {
+        } else if (this.Last(1) == 'я') {
 
             this.wordForms(this.workingWord, ['и', 'е', 'ю', 'ей', 'е'], 1);
             this.Rule(303);
@@ -367,7 +367,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет.  
      */
     manRule7() {
-        if (this.Last(1) == "а") {
+        if (this.Last(1) == 'а') {
             if (this.inNames(this.workingWord, ['да'])) {
 
                 this.Rule(701);
@@ -400,7 +400,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
                 return true;
 
             }
-        } else if (this.Last(1) == "я") {
+        } else if (this.Last(1) == 'я') {
 
             this.wordForms(this.workingWord, ['ой', 'ой', 'ую', 'ой', 'ой'], 2);
             this.Rule(705);
@@ -437,7 +437,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет. 
      */
     womanRule1() {
-        if (this.Last(1) == "а" && this.Last(2, 1) != 'и') {
+        if (this.Last(1) == 'а' && this.Last(2, 1) != 'и') {
             if (!this.in(this.Last(2, 1), 'шхкг')) {
 
                 this.wordForms(this.workingWord, ['ы', 'е', 'у', 'ой', 'е'], 1);
@@ -474,8 +474,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет.  
      */
     womanRule2() {
-        if (this.Last(1) == "я") {
-            if (this.Last(2, 1) != "и") {
+        if (this.Last(1) == 'я') {
+            if (this.Last(2, 1) != 'и') {
 
                 this.wordForms(this.workingWord, ['и', 'е', 'ю', 'ей', 'е'], 1);
                 this.Rule(201);
@@ -501,7 +501,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет. 
      */
     womanRule3() {
-        if (this.Last(1) == "ь") {
+        if (this.Last(1) == 'ь') {
 
             this.wordForms(this.workingWord, ['и', 'и', 'ь', 'ью', 'и'], 1);
             this.Rule(3);
@@ -519,7 +519,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      * @return bool true если правило было задействовано и false если нет. 
      */
     womanRule4() {
-        if (this.Last(1) == "а") {
+        if (this.Last(1) == 'а') {
             if (this.in(this.Last(2, 1), 'гк')) {
 
                 this.wordForms(this.workingWord, ['и', 'е', 'у', 'ой', 'е'], 1);
@@ -542,7 +542,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
                 return true;
 
             }
-        } else if (this.Last(1) == "я") {
+        } else if (this.Last(1) == 'я') {
 
             this.wordForms(this.workingWord, ['ой', 'ой', 'ую', 'ой', 'ой'], 2);
             this.Rule(404);
@@ -640,7 +640,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -716,7 +716,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -744,7 +744,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         this.setWorkingWord(word.getWord());
 
@@ -765,7 +765,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
-            throw new Exception("word should be of class NCLNameCaseWord");
+            throw new Exception('word should be of class NCLNameCaseWord');
 
         var namepart = word.getWord();
         var length = NCLStr.strlen(namepart);
@@ -852,7 +852,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         /**
          * Если две последних букв согласные то скорее всего это фамилия
          */
-        else if (this.in(this.Last(1), this.consonant + "" + 'ь') && this.in(this.Last(2, 1), this.consonant + "" + 'ь')) {
+        else if (this.in(this.Last(1), this.consonant + '' + 'ь') && this.in(this.Last(2, 1), this.consonant + '' + 'ь')) {
             /**
              * Практически все кроме тех которые оканчиваются на следующие буквы
              */

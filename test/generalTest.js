@@ -38,7 +38,7 @@ describe('UA', () => {
 
     // ----------------------------------------------------------------------
 
-    describe.skip('Masculine Full Names', () => {
+    describe('Masculine Full Names', () => {
         const ncl = new NCLNameCaseUa();
 
         const data = loadData('masculine');
@@ -61,7 +61,7 @@ describe('UA', () => {
 
     // ----------------------------------------------------------------------
 
-    describe.skip('Feminine Full Names', () => {
+    describe('Feminine Full Names', () => {
         const ncl = new NCLNameCaseUa();
 
         const data = loadData('feminine');
@@ -113,7 +113,7 @@ describe('RU', () => {
 
     // ----------------------------------------------------------------------
 
-    describe.skip('Masculine Full Names', () => {
+    describe('Masculine Full Names', () => {
         const ncl = new NCLNameCaseRu();
 
         const pathToStubFile = path.join(process.cwd(), 'data/Names/boy_full_result.txt');
@@ -151,7 +151,7 @@ describe('RU', () => {
 
     // ----------------------------------------------------------------------
 
-    describe.skip('Feminine Full Names', () => {
+    describe('Feminine Full Names', () => {
         const ncl = new NCLNameCaseRu();
 
         const pathToStubFile = path.join(process.cwd(), 'data/Names/girl_full_result.txt');

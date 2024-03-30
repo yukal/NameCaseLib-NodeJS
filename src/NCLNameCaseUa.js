@@ -118,14 +118,15 @@ class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Alternation of consonants `г` `к` —» `ж` `ч`.
+     * Alternation of consonants `г` `к` `х` —» `ж` `ч` `ш`.
      * @param string letter A letter that needs to be checked for the alternation
      * @return string An alternative letter
      */
     inverse2(letter) {
         switch (letter) {
-            case 'к': return 'ч';
             case 'г': return 'ж';
+            case 'к': return 'ч';
+            case 'х': return 'ш';
         }
 
         return letter;

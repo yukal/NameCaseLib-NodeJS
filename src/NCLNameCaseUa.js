@@ -110,7 +110,9 @@ class NCLNameCaseUa extends NCLNameCaseCore {
      * @return bool true if the character is an apostrophe
      */
     isApostrof(char) {
-        if (this.in(char, ' ' + this.consonant + this.vowels)) {
+        var haystack = ' ' + this.consonant + this.vowels;
+
+        if (haystack.includes(char)) {
             return false;
         }
 

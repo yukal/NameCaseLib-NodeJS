@@ -12,7 +12,7 @@
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCL {
+class NCL {
     /**
      * Masculine gender
      * @static integer
@@ -111,3 +111,5 @@ export default class NCL {
         NCL._concreteClasses = concreteClasses;
     }
 }
+
+module.exports = NCL;

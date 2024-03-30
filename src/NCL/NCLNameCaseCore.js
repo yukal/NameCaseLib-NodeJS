@@ -3,9 +3,9 @@
  * @package NameCaseLib
  */
 
-import NCL from './NCL.js';
-import NCLStr from './NCLStr.js';
-import NCLNameCaseWord from './NCLNameCaseWord.js';
+const NCL = require('./NCL.js');
+const NCLStr = require('./NCLStr.js');
+const NCLNameCaseWord = require('./NCLNameCaseWord.js');
 
 var math_min = require('locutus/php/math/min');
 var math_max = require('locutus/php/math/max');
@@ -34,7 +34,7 @@ var array_key_exists = require('locutus/php/array/array_key_exists'),
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLNameCaseCore extends NCL {
+class NCLNameCaseCore extends NCL {
     constructor() {
         super();
 
@@ -1352,3 +1352,5 @@ export default class NCLNameCaseCore extends NCL {
         return this._languageBuild;
     }
 }
+
+module.exports = NCLNameCaseCore;

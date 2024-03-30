@@ -1,12 +1,16 @@
 'use strict';
 
-import NCLNameCaseUa from './NCLNameCaseUa.js';
-import NCLNameCaseRu from './NCLNameCaseRu.js';
-import NCL from './NCL/NCL.js';
+const NCLNameCaseUa = require('./NCLNameCaseUa.js');
+const NCLNameCaseRu = require('./NCLNameCaseRu.js');
+const NCL = require('./NCL/NCL.js');
 
 NCL.setConcreteClasses({
     ru: NCLNameCaseRu,
     ua: NCLNameCaseUa,
 });
 
-export { NCLNameCaseUa, NCLNameCaseRu, NCL };
+module.exports = {
+    NCLNameCaseUa,
+    NCLNameCaseRu,
+    NCL
+};

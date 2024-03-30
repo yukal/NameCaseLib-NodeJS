@@ -3,12 +3,12 @@
  * @package NameCaseLib
  */
 
-import NCLNameCaseCore from './NCL/NCLNameCaseCore.js';
-import NCLNameCaseWord from './NCL/NCLNameCaseWord.js';
-import NCLStr from './NCL/NCLStr.js';
+const NCLNameCaseCore = require('./NCL/NCLNameCaseCore.js');
+const NCLNameCaseWord = require('./NCL/NCLNameCaseWord.js');
+const NCLStr = require('./NCL/NCLStr.js');
 
-var math_min = require('locutus/php/math/min');
-var math_max = require('locutus/php/math/max');
+const math_min = require('locutus/php/math/min');
+const math_max = require('locutus/php/math/max');
 
 /**
  * **NCL NameCase Russian Language**
@@ -21,7 +21,7 @@ var math_max = require('locutus/php/math/max');
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLNameCaseRu extends NCLNameCaseCore {
+class NCLNameCaseRu extends NCLNameCaseCore {
     constructor() {
         super();
 
@@ -940,3 +940,5 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         }
     }
 }
+
+module.exports = NCLNameCaseRu;

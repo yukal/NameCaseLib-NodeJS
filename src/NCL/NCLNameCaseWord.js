@@ -3,11 +3,11 @@
  * @package NameCaseLib
  */
 
-import NCLStr from './NCLStr.js';
-import NCL from './NCL.js';
+const NCL = require('./NCL.js');
+const NCLStr = require('./NCLStr.js');
 
-var math_min = require('locutus/php/math/min');
-var math_max = require('locutus/php/math/max');
+const math_min = require('locutus/php/math/min');
+const math_max = require('locutus/php/math/max');
 
 /**
  * NCLNameCaseWord
@@ -17,7 +17,7 @@ var math_max = require('locutus/php/math/max');
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLNameCaseWord {
+class NCLNameCaseWord {
     /**
      * Creating a new object with a specific `word`.
      * @param string word The input string
@@ -316,3 +316,5 @@ export default class NCLNameCaseWord {
         this.rule = ruleID;
     }
 }
+
+module.exports = NCLNameCaseWord;

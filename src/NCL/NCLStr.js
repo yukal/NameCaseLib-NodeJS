@@ -19,7 +19,7 @@ var implode = require('locutus/php/strings/implode');
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLStr {
+class NCLStr {
     /**
      * Кодировка, в котороя работает система
      * @var string 
@@ -140,3 +140,5 @@ export default class NCLStr {
         return mb_split(pattern, string);
     }
 }
+
+module.exports = NCLStr;

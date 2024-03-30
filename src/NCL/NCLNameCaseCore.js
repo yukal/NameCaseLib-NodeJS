@@ -981,11 +981,11 @@ class NCLNameCaseCore extends NCL {
 
         var length = format.length;
         var result = [];
-        var cases = {};
-
-        cases['S'] = this.getCasesConnected(index['S']);
-        cases['N'] = this.getCasesConnected(index['N']);
-        cases['F'] = this.getCasesConnected(index['F']);
+        var cases = {
+            S: this.getCasesConnected(this.index.S),
+            N: this.getCasesConnected(this.index.N),
+            F: this.getCasesConnected(this.index.F),
+        };
 
         for (var curCase = 0; curCase < this.CaseCount; curCase++) {
             var line = '';

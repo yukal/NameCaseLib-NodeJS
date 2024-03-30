@@ -1,0 +1,41 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: test-general
+
+on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: |
+          mkdir -p data/{Names,uacrazy}
+
+          wget -O data/uacrazy/Fatherboy.txt "https://www.dropbox.com/scl/fi/ap6zza8wqfnotmta3wmza/Fatherboy.txt?rlkey=hp8w8cmwcj3agw0yjet9k56mf&dl=0"
+          wget -O data/uacrazy/Namesboy.txt "https://www.dropbox.com/scl/fi/228cioogjfwzakzgzy05y/Namesboy.txt?rlkey=60glbomx6eip3zafxmwb1qcfj&dl=0"
+          wget -O data/uacrazy/Sirnamesboy.txt "https://www.dropbox.com/scl/fi/fwd6al00twjs3wm5chicz/Sirnamesboy.txt?rlkey=0w3o54alntsv28okwvnsxq16e&dl=0"
+          wget -O data/uacrazy/Fathergirl.txt "https://www.dropbox.com/scl/fi/26ujs1hkfnrz8dz6ojzrs/Fathergirl.txt?rlkey=an0fvoshowo3f5nx68bs737zp&dl=0"
+          wget -O data/uacrazy/Namesgirl.txt "https://www.dropbox.com/scl/fi/50rht7fdgri6dcswfl1yz/Namesgirl.txt?rlkey=nqtvthtoxjv1boi3yh3nmaiku&dl=0"
+          wget -O data/uacrazy/Sirnamesgirl.txt "https://www.dropbox.com/scl/fi/l3i86x0gtaa6qceho5nbh/Sirnamesgirl.txt?rlkey=5keu3kuyp0ky9xe4oaphlit9l&dl=0"
+
+          wget -O data/Names/boy_full_result.txt "https://www.dropbox.com/scl/fi/tbt305vnm42uw8g3e7tiu/boy_full_result.txt?rlkey=khg8oedvgtb710584cpj81ssy&dl=0"
+          wget -O data/Names/girl_full_result.txt "https://www.dropbox.com/scl/fi/n9m7ieeo4yrbq2dhtw1hm/girl_full_result.txt?rlkey=lgif5k7via14ptwhtysknnfeh&dl=0"
+
+      - run: |
+          npm ci
+          npm run test-general

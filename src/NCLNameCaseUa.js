@@ -196,6 +196,8 @@ class NCLNameCaseUa extends NCLNameCaseCore {
                 return word[i];
             }
         }
+
+        return '';
     }
 
     /**

@@ -626,19 +626,10 @@ class NCLNameCaseCore extends NCL {
      * @see prepareEverything
      */
     splitFullName(fullname) {
-        fullname = trim(fullname);
-        var list = explode(' ', fullname);
-
-        for (var word of list) {
-            this.words.push(new NCLNameCaseWord(word));
-        }
+        this.words = fullname.trim().split(' ')
+            .map((word) => new NCLNameCaseWord(word));
 
         this.prepareEverything();
-        var formatArr = [];
-
-        for (var word of this.words) {
-            formatArr.push(word.getNamePart());
-        }
 
         return this.words;
     }

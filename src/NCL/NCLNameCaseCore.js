@@ -545,10 +545,9 @@ class NCLNameCaseCore extends NCL {
     generateIndex() {
         this.index = { 'N': [], 'S': [], 'F': [] };
 
-        for (var index in this.words) {
-            var word = this.words[index];
+        for (var word of this.words) {
             var namepart = word.getNamePart();
-            this.index[namepart].push(index);
+            this.index[namepart].push(word);
         }
     }
 

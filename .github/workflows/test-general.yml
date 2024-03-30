@@ -36,6 +36,5 @@ jobs:
           wget -O data/Names/boy_full_result.txt "https://www.dropbox.com/scl/fi/tbt305vnm42uw8g3e7tiu/boy_full_result.txt?rlkey=khg8oedvgtb710584cpj81ssy&dl=0"
           wget -O data/Names/girl_full_result.txt "https://www.dropbox.com/scl/fi/n9m7ieeo4yrbq2dhtw1hm/girl_full_result.txt?rlkey=lgif5k7via14ptwhtysknnfeh&dl=0"
 
-      - run: |
-          npm ci
-          npm run test-general
+      # - run: npm ci
+      - run: npm run test-general

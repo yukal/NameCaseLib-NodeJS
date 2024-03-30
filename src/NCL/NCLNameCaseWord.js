@@ -41,7 +41,7 @@ class NCLNameCaseWord {
          * 
          * @var string
          */
-        this.namePart = null;
+        this.namePart = '';
 
         /**
          * The rate indicating the likelihood that the current word is masculine.

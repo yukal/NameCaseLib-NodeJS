@@ -103,7 +103,11 @@ class NCLNameCaseCore extends NCL {
          * 
          * @var array
          */
-        this.index = {};
+        this.index = {
+            N: [],
+            F: [],
+            S: [],
+        };
 
         // Probability of automatic gender detection [0..10]. Fairly accurate at 0.1
         this.gender_koef = 0;
@@ -125,8 +129,11 @@ class NCLNameCaseCore extends NCL {
      * @return NCLNameCaseCore
      */
     fullReset() {
-        this.words = [];
-        this.index = { 'N': [], 'F': [], 'S': [] };
+        this.words.length = 0;
+        this.index.F.length = 0;
+        this.index.N.length = 0;
+        this.index.S.length = 0;
+
         this.reset();
         this.notReady();
 

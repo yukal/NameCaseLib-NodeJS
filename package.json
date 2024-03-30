@@ -28,7 +28,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "cz-conventional-changelog": "^3.3.0",
     "mocha": "^2.4.5"
   },
   "dependencies": {
@@ -37,10 +36,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/yukal/declension-name"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }

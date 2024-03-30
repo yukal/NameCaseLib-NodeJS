@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node --test **/test*.js",
     "test-general": "node --test **/generalTest*.js",
-    "coverage": "node --test --experimental-test-coverage ./test"
+    "coverage": "node --test --experimental-test-coverage **/test*.js"
   },
   "keywords": [
     "declension",

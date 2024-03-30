@@ -19,14 +19,12 @@ var implode = require('locutus/php/strings/implode');
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLStr
-{
+export default class NCLStr {
     /**
      * Кодировка, в котороя работает система
      * @var string 
      */
     static get charset() { return 'utf-8'; }
-
 
     /**
      * Получить подстроку из строки
@@ -35,13 +33,12 @@ export default class NCLStr
      * @param int $length длина подстроки
      * @return int подстрока 
      */
-    static substr (str, start, length = null) {
+    static substr(str, start, length = null) {
         let s = mb_substr(str, start, length, NCLStr.charset);
         if (s === false)
             s = '';
         return s;
     }
-     
 
     /**
      * Поиск подстроки в строке
@@ -50,40 +47,36 @@ export default class NCLStr
      * @param int $offset начало поиска
      * @return int позиция подстроки в строке
      */
-    static strpos (haystack, needle, offset = 0) {
+    static strpos(haystack, needle, offset = 0) {
         return mb_strpos(haystack, needle, offset, NCLStr.charset);
     }
-     
 
     /**
      * Определение длины строки
      * @param string $str строка
      * @return int длина строки
      */
-    static strlen (str) {
+    static strlen(str) {
         return mb_strlen(str, NCLStr.charset);
     }
-    
 
     /**
      * Переводит строку в нижний регистр
      * @param string $str строка
      * @return string строка в нижнем регистре
      */
-    static strtolower (str) {
+    static strtolower(str) {
         return mb_strtolower(str, NCLStr.charset);
     }
-    
 
     /**
      * Переводит строку в верхний регистр
      * @param string $str строка
      * @return string строка в верхнем регистре
      */
-    static strtoupper (str) {
+    static strtoupper(str) {
         return mb_strtoupper(str, NCLStr.charset);
     }
-     
 
     /**
      * Поиск подстроки в строке справа
@@ -92,65 +85,58 @@ export default class NCLStr
      * @param int $offset начало поиска
      * @return int позиция подстроки в строке
      */
-    static strrpos (haystack, needle, offset = null) {
-        return mb_strrpos(haystack, needle, offset, NCLStr.charset);        
+    static strrpos(haystack, needle, offset = null) {
+        return mb_strrpos(haystack, needle, offset, NCLStr.charset);
     }
-    
 
     /**
      * Проверяет в нижнем ли регистре находится строка
      * @param string $phrase строка
      * @return bool в нижнем ли регистре строка 
      */
-    static isLowerCase (phrase) {
+    static isLowerCase(phrase) {
         return (phrase == NCLStr.strtolower(phrase));
     }
-    
 
-     /**
-     * Проверяет в верхнем ли регистре находится строка
-     * @param string $phrase строка
-     * @return bool в верхнем ли регистре строка 
-     */
-    static isUpperCase (phrase) {
+    /**
+    * Проверяет в верхнем ли регистре находится строка
+    * @param string $phrase строка
+    * @return bool в верхнем ли регистре строка
+    */
+    static isUpperCase(phrase) {
         return (phrase == NCLStr.strtoupper(phrase));
     }
-    
+
     /**
      * Превращает строку в массив букв
      * @param string $phrase строка
      * @return array массив букв
      */
-    static splitLetters (phrase) {
+    static splitLetters(phrase) {
         var resultArr = [];
         var stop = NCLStr.strlen(phrase);
-        for (var idx = 0; idx < stop; idx++)
-        {
+        for (var idx = 0; idx < stop; idx++) {
             resultArr.push(NCLStr.substr(phrase, idx, 1));
         }
         return resultArr;
     }
-    
 
     /**
      * Соединяет массив букв в строку
      * @param array $lettersArr массив букв
      * @return string строка
      */
-    static connectLetters (lettersArr) {
+    static connectLetters(lettersArr) {
         return implode('', lettersArr);
     }
-     
-    
+
     /**
      * Разбивает строку на части использую шаблон
      * @param string $pattern шаблон разбития
      * @param string $string строка, которую нужно разбить
      * @return array разбитый массив 
      */
-    static explode (pattern, string) {
+    static explode(pattern, string) {
         return mb_split(pattern, string);
     }
-     
 }
-

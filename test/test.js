@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {NCLNameCaseUa, NCLNameCaseRu, NCL} = require('../build/index.js');
+const { NCLNameCaseUa, NCLNameCaseRu, NCL } = require('../build/index.js');
 const fs = require('fs');
 
 const CASES_NAMES = [
@@ -29,7 +29,7 @@ for (let lang in testFios) {
         for (let forms of fios) {
             let basicForm = forms[0];
             describe(basicForm, () => {
-                for (let c = 1 ; c < forms.length ; c++) {
+                for (let c = 1; c < forms.length; c++) {
                     let expForm = forms[c];
                     if (!expForm)
                         continue;
@@ -77,7 +77,7 @@ for (let lang in testFiles) {
                     continue;
                 let basicForm = forms[0];
                 describe(basicForm, () => {
-                    for (let f = 1 ; f < forms.length ; f++) {
+                    for (let f = 1; f < forms.length; f++) {
                         let expForm = forms[f];
                         let cls = NCL.getConcreteClass(lang);
                         let ncl = new cls;
@@ -104,15 +104,15 @@ let testSplitFiles = {
             name: 'ФИО мужские',
             gender: 'm',
             files: {
-                f : {
+                f: {
                     file: 'uacrazy/Sirnamesboy.txt',
                     delim: ',',
                 },
-                i : {
+                i: {
                     file: 'uacrazy/Namesboy.txt',
                     delim: ',',
                 },
-                o : {
+                o: {
                     file: 'uacrazy/Fatherboy.txt',
                     delim: ',',
                 }
@@ -122,15 +122,15 @@ let testSplitFiles = {
             name: 'ФИО женские',
             gender: 'f',
             files: {
-                f : {
+                f: {
                     file: 'uacrazy/Sirnamesgirl.txt',
                     delim: ',',
                 },
-                i : {
+                i: {
                     file: 'uacrazy/Namesgirl.txt',
                     delim: ',',
                 },
-                o : {
+                o: {
                     file: 'uacrazy/Fathergirl.txt',
                     delim: ',',
                 }
@@ -161,7 +161,7 @@ for (let lang in testSplitFiles) {
                 biggest_part = key;
         }
 
-        for (let i = 0 ; i < fios_parts[biggest_part].length ; i++) {
+        for (let i = 0; i < fios_parts[biggest_part].length; i++) {
             let parts = {};
             let min_forms = 0;
             for (let key of parts_keys) {
@@ -172,13 +172,13 @@ for (let lang in testSplitFiles) {
             }
 
             let forms = [];
-            for (let f = 0 ; f < min_forms ; f++) {
+            for (let f = 0; f < min_forms; f++) {
                 let fio = parts['f'][f] + ' ' + parts['i'][f] + ' ' + parts['o'][f];
                 forms.push(fio);
             }
             let basicForm = forms[0];
             describe(basicForm, () => {
-                for (let f = 1 ; f < forms.length ; f++) {
+                for (let f = 1; f < forms.length; f++) {
                     let expForm = forms[f];
                     let cls = NCL.getConcreteClass(lang);
                     let ncl = new cls;

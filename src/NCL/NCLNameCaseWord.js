@@ -16,8 +16,7 @@ var math_max = require('locutus/php/math/max');
  * @version 0.4.1
  * @package NameCaseLib
  */
-export default class NCLNameCaseWord
-{
+export default class NCLNameCaseWord {
     /**
      * Создание нового обьекта со словом <var>$word</var>
      * @param string $word слово
@@ -28,11 +27,13 @@ export default class NCLNameCaseWord
          * @var string
          */
         this.word = '';
+
         /**
          * Оригинальное слово
          * @var string
          */
         this.word_orig = '';
+
         /**
          * Тип текущей записи (Фамилия/Имя/Отчество)
          * - <b>N</b> - ім’я
@@ -41,16 +42,19 @@ export default class NCLNameCaseWord
          * @var string
          */
         this.namePart = null;
+
         /**
          * Вероятность того, что текущей слово относится к мужскому полу
          * @var int
          */
         this.genderMan = 0;
+
         /**
          * Вероятность того, что текущей слово относится к женскому полу
          * @var int
          */
         this.genderWoman = 0;
+
         /**
          * Окончательное решение, к какому полу относится слово
          * - 0 - не определено
@@ -59,6 +63,7 @@ export default class NCLNameCaseWord
          * @var int
          */
         this.genderSolved = 0;
+
         /**
          * Маска больших букв в слове.
          *
@@ -68,23 +73,26 @@ export default class NCLNameCaseWord
          * @var array
          */
         this.letterMask = [];
+
         /**
          * Содержит true, если все слово было в верхнем регистре и false, если не было
          * @var bool
          */
         this.isUpperCase = false;
+
         /**
          * Массив содержит все падежи слова, полученые после склонения текущего слова
          * @var array
          */
         this.NameCases = [];
+
         /**
          * Номер правила, по которому было произведено склонение текущего слова
          * @var int
          */
         this.rule = 0;
 
-        this.word_orig=word;
+        this.word_orig = word;
         this.generateMask(word);
         this.word = NCLStr.strtolower(word);
     }
@@ -95,23 +103,24 @@ export default class NCLNameCaseWord
      * - X - больная буква
      * @param string $word слово, для которого генерировать маску
      */
-    generateMask(word)
-    {
+    generateMask(word) {
         var letters = NCLStr.splitLetters(word);
         var mask = [];
         this.isUpperCase = true;
-        for (var letter of letters)
-        {
-            if (NCLStr.isLowerCase(letter))
-            {
+
+        for (var letter of letters) {
+            if (NCLStr.isLowerCase(letter)) {
+
                 mask.push('x');
                 this.isUpperCase = false;
-            }
-            else
-            {
+
+            } else {
+
                 mask.push('X');
+
             }
         }
+
         this.letterMask = mask;
     }
 
@@ -120,37 +129,39 @@ export default class NCLNameCaseWord
      * - x - маленькая буква
      * - X - больная буква
      */
-    returnMask()
-    {
-        if (this.isUpperCase)
-        {
-            for (var index in this.NameCases)
-            {
+    returnMask() {
+        if (this.isUpperCase) {
+
+            for (var index in this.NameCases) {
                 var kase = this.NameCases[index];
                 this.NameCases[index] = NCLStr.strtoupper(this.NameCases[index]);
             }
-        }
-        else
-        {
+
+        } else {
+
             var splitedMask = this.letterMask;
             var maskLength = splitedMask.length;
-            for (var index in this.NameCases)
-            {
+
+            for (var index in this.NameCases) {
                 var kase = this.NameCases[index];
                 var caseLength = NCLStr.strlen(kase);
                 var max = math_min([caseLength, maskLength]);
+
                 this.NameCases[index] = '';
-                for (var letterIndex = 0; letterIndex < max; letterIndex++)
-                {
+
+                for (var letterIndex = 0; letterIndex < max; letterIndex++) {
                     var letter = NCLStr.substr(kase, letterIndex, 1);
-                    if (splitedMask[letterIndex] == 'X')
-                    {
+
+                    if (splitedMask[letterIndex] == 'X') {
                         letter = NCLStr.strtoupper(letter);
                     }
+
                     this.NameCases[index] += letter;
                 }
-                this.NameCases[index] += NCLStr.substr(kase, max, caseLength-maskLength);
+
+                this.NameCases[index] += NCLStr.substr(kase, max, caseLength - maskLength);
             }
+
         }
     }
 
@@ -158,8 +169,7 @@ export default class NCLNameCaseWord
      * Сохраняет результат склонения текущего слова
      * @param array $nameCases массив со всеми падежами
      */
-    setNameCases(nameCases, is_return_mask=true)
-    {
+    setNameCases(nameCases, is_return_mask = true) {
         this.NameCases = nameCases;
         if (is_return_mask) this.returnMask();
     }
@@ -168,8 +178,7 @@ export default class NCLNameCaseWord
      * Возвращает массив со всеми падежами текущего слова
      * @return array массив со всеми падежами
      */
-    getNameCases()
-    {
+    getNameCases() {
         return this.NameCases;
     }
 
@@ -178,12 +187,11 @@ export default class NCLNameCaseWord
      * @param int $number нужный падеж
      * @return string строка с нужным падежом текущего слова
      */
-    getNameCase(number)
-    {
-        if(this.NameCases[number] != undefined)
-        {
+    getNameCase(number) {
+        if (this.NameCases[number] != undefined) {
             return this.NameCases[number];
         }
+
         return false;
     }
 
@@ -191,19 +199,15 @@ export default class NCLNameCaseWord
      * Расчитывает и возвращает пол текущего слова
      * @return int пол текущего слова
      */
-    gender()
-    {
-        if (!this.genderSolved)
-        {
-            if (this.genderMan >= this.genderWoman)
-            {
+    gender() {
+        if (!this.genderSolved) {
+            if (this.genderMan >= this.genderWoman) {
                 this.genderSolved = NCL.$MAN;
-            }
-            else
-            {
+            } else {
                 this.genderSolved = NCL.$WOMAN;
             }
         }
+
         return this.genderSolved;
     }
 
@@ -212,8 +216,7 @@ export default class NCLNameCaseWord
      * @param int $man вероятность того, что слово мужчина
      * @param int $woman верятность того, что слово женщина
      */
-    setGender(man, woman)
-    {
+    setGender(man, woman) {
         this.genderMan = man;
         this.genderWoman = woman;
     }
@@ -225,8 +228,7 @@ export default class NCLNameCaseWord
      * - NCL::$WOMAN - женщина
      * @param int $gender пол человека
      */
-    setTrueGender(gender)
-    {
+    setTrueGender(gender) {
         this.genderSolved = gender;
     }
 
@@ -234,9 +236,8 @@ export default class NCLNameCaseWord
      * Возвращает массив вероятности того, что даное слово является мужчиной или женщиной
      * @return array массив вероятностей
      */
-    getGender()
-    {
-        return {[NCL.MAN] : this.genderMan, [NCL.WOMAN] : this.genderWoman};
+    getGender() {
+        return { [NCL.MAN]: this.genderMan, [NCL.WOMAN]: this.genderWoman };
     }
 
     /**
@@ -247,8 +248,7 @@ export default class NCLNameCaseWord
      * - F - Отчество
      * @param string $namePart тип слова
      */
-    setNamePart(namePart)
-    {
+    setNamePart(namePart) {
         this.namePart = namePart;
     }
 
@@ -260,8 +260,7 @@ export default class NCLNameCaseWord
      * - F - Отчество
      * @return string $namePart тип слова
      */
-    getNamePart()
-    {
+    getNamePart() {
         return this.namePart;
     }
 
@@ -269,8 +268,7 @@ export default class NCLNameCaseWord
      * Возвращает текущее слово.
      * @return string текущее слово
      */
-    getWord()
-    {
+    getWord() {
         return this.word;
     }
 
@@ -278,8 +276,7 @@ export default class NCLNameCaseWord
      * Возвращает текущее оригинальное слово.
      * @return string текущее слово
      */
-    getWordOrig()
-    {
+    getWordOrig() {
         return this.word_orig;
     }
 
@@ -288,8 +285,7 @@ export default class NCLNameCaseWord
      * решение. Эта функция определяет было ли принято окончательное решение.
      * @return bool было ли принято окончательное решение по поводу пола текущего слова
      */
-    isGenderSolved()
-    {
+    isGenderSolved() {
         return (this.genderSolved ? true : false);
     }
 
@@ -297,8 +293,7 @@ export default class NCLNameCaseWord
      * Устанавливает номер правила по которому склонялось текущее слово.
      * @param int $ruleID номер правила
      */
-    setRule(ruleID)
-    {
+    setRule(ruleID) {
         this.rule = ruleID;
     }
 }

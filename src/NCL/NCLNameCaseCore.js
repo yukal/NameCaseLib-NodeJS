@@ -237,8 +237,10 @@ class NCLNameCaseCore extends NCL {
         for (var ruleID of rulesArray) {
             var ruleMethod = gender + 'Rule' + ruleID;
 
-            if (typeof this[ruleMethod] != 'function')
-                throw new Exception('Method ' + ruleMethod + ' not found');
+            if (typeof this[ruleMethod] != 'function') {
+                throw new Error(`Method ${ruleMethod} not found`);
+            }
+
             if (this[ruleMethod]()) {
                 return true;
             }
@@ -465,8 +467,9 @@ class NCLNameCaseCore extends NCL {
      * @see detectNamePart
      */
     prepareNamePart(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         if (!word.getNamePart()) {
             this.detectNamePart(word);
@@ -498,8 +501,9 @@ class NCLNameCaseCore extends NCL {
      * @see GenderBySecondName
      */
     prepareGender(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         if (!word.isGenderSolved()) {
             var namePart = word.getNamePart();
@@ -693,8 +697,9 @@ class NCLNameCaseCore extends NCL {
      * @param NCLNameCaseWord word An anthroponym
      */
     WordCase(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         var gender = (word.gender() == NCL.MAN ? 'man' : 'woman');
 
@@ -713,8 +718,9 @@ class NCLNameCaseCore extends NCL {
         }
 
         var method = gender + namepart + 'Name';
-        if (typeof this[method] != 'function')
-            throw new Exception('Method ' + method + ' not found');
+        if (typeof this[method] != 'function') {
+            throw new Error(`Method ${method} not found`);
+        }
 
         // if the last name is 2 words with a hyphen
         // http://new.gramota.ru/spravka/buro/search-answer?s=273912
@@ -823,8 +829,9 @@ class NCLNameCaseCore extends NCL {
      * @return mixed An array or a string with the necessary inflected case
      */
     getWordCase(/*NCLNameCaseWord*/ word, number = null) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         var cases = word.getNameCases();
 
@@ -1296,8 +1303,9 @@ class NCLNameCaseCore extends NCL {
      * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
     }
 
     /**
@@ -1307,8 +1315,9 @@ class NCLNameCaseCore extends NCL {
      * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
     }
 
     /**
@@ -1318,8 +1327,9 @@ class NCLNameCaseCore extends NCL {
      * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
     }
 
     /**
@@ -1332,8 +1342,9 @@ class NCLNameCaseCore extends NCL {
      * @param NCLNameCaseWord word An object belonging to the class of words requiring determination
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
     }
 
     /**

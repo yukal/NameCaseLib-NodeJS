@@ -636,8 +636,9 @@ class NCLNameCaseRu extends NCLNameCaseCore {
      * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         this.setWorkingWord(word.getWord());
 
@@ -712,8 +713,9 @@ class NCLNameCaseRu extends NCLNameCaseCore {
      * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         this.setWorkingWord(word.getWord());
 
@@ -740,8 +742,9 @@ class NCLNameCaseRu extends NCLNameCaseCore {
      * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         this.setWorkingWord(word.getWord());
 
@@ -762,8 +765,9 @@ class NCLNameCaseRu extends NCLNameCaseCore {
      * @param NCLNameCaseWord word An object belonging to the class of words requiring determination
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
-        if (!(word instanceof NCLNameCaseWord))
-            throw new Exception('word should be of class NCLNameCaseWord');
+        if (!(word instanceof NCLNameCaseWord)) {
+            throw new Error(`word should be of class NCLNameCaseWord`);
+        }
 
         var namepart = word.getWord();
         var length = NCLStr.strlen(namepart);

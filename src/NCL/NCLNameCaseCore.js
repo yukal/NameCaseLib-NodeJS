@@ -586,11 +586,11 @@ class NCLNameCaseCore extends NCL {
     genderAutoDetect() {
         this.prepareEverything();
 
-        if (!this.words.length) {
+        if (this.words.length) {
             var n = -1;
             var max_koef = -1;
 
-            for (var k in this.words) {
+            for (var k of this.words) {
                 var word = this.words[k];
                 var genders = word.getGender();
                 var min = Math.min(...genders);
@@ -614,7 +614,7 @@ class NCLNameCaseCore extends NCL {
             }
         }
 
-        return false;
+        return -1;
     }
 
     /**

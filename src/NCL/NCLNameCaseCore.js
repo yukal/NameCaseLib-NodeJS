@@ -770,7 +770,7 @@ class NCLNameCaseCore extends NCL {
         }
 
         // set cases for the whole word
-        word.setNameCases(result, false);
+        word.setNameCases(Object.values(result), false);
         word.setRule(last_rule);
     }
 

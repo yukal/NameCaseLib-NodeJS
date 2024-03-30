@@ -802,7 +802,7 @@ class NCLNameCaseCore extends NCL {
      * @param int number The inflection case number
      * @return mixed An array or a string with the necessary inflected case
      */
-    getWordCase(/*NCLNameCaseWord*/ word, number = null) {
+    getWordCase(/*NCLNameCaseWord*/ word, number = -1) {
         if (!(word instanceof NCLNameCaseWord)) {
             throw new Error(`word should be of class NCLNameCaseWord`);
         }
@@ -820,7 +820,7 @@ class NCLNameCaseCore extends NCL {
      * @param int number The case number
      * @return mixed Either an array with all cases, or a string with one case
      */
-    getCasesConnected(indexArray, number = null) {
+    getCasesConnected(indexArray, number = -1) {
         var readyArr = indexArray.map((word) =>
             this.getWordCase(word, number));
 
@@ -862,7 +862,7 @@ class NCLNameCaseCore extends NCL {
      * @see AllWordCases
      * @see getCasesConnected
      */
-    getFirstNameCase(number = null) {
+    getFirstNameCase(number = -1) {
         this.AllWordCases();
         return this.getCasesConnected(this.index['N'], number);
     }
@@ -878,7 +878,7 @@ class NCLNameCaseCore extends NCL {
      * @see AllWordCases
      * @see getCasesConnected
      */
-    getSecondNameCase(number = null) {
+    getSecondNameCase(number = -1) {
         this.AllWordCases();
         return this.getCasesConnected(this.index['S'], number);
     }
@@ -894,7 +894,7 @@ class NCLNameCaseCore extends NCL {
      * @see AllWordCases
      * @see getCasesConnected
      */
-    getFatherNameCase(number = null) {
+    getFatherNameCase(number = -1) {
         this.AllWordCases();
         return this.getCasesConnected(this.index['F'], number);
     }
@@ -914,7 +914,7 @@ class NCLNameCaseCore extends NCL {
      * @see setGender
      * @see getFirstNameCase
      */
-    qFirstName(firstName, CaseNumber = null, gender = 0) {
+    qFirstName(firstName, CaseNumber = -1, gender = 0) {
         this.fullReset();
         this.setFirstName(firstName);
 
@@ -940,7 +940,7 @@ class NCLNameCaseCore extends NCL {
      * @see setGender
      * @see getSecondNameCase
      */
-    qSecondName(secondName, CaseNumber = null, gender = 0) {
+    qSecondName(secondName, CaseNumber = -1, gender = 0) {
         this.fullReset();
         this.setSecondName(secondName);
 
@@ -966,7 +966,7 @@ class NCLNameCaseCore extends NCL {
      * @see setGender
      * @see getFatherNameCase
      */
-    qFatherName(fatherName, CaseNumber = null, gender = 0) {
+    qFatherName(fatherName, CaseNumber = -1, gender = 0) {
         this.fullReset();
         this.setFatherName(fatherName);
 
@@ -1095,7 +1095,7 @@ class NCLNameCaseCore extends NCL {
         this.AllWordCases();
 
         // If the case is not specified, then use the another method
-        if (caseNum == null || !caseNum) {
+        if (caseNum < 0 || caseNum > (this.CaseCount - 1)) {
             return this.getFormattedArray(format);
         }
 
@@ -1174,7 +1174,7 @@ class NCLNameCaseCore extends NCL {
      * @see setGender
      * @see getFormatted
      */
-    q(fullname, caseNum = null, gender = null) {
+    q(fullname, caseNum = -1, gender = 0) {
         this.fullReset();
         var format = this.splitFullName(fullname);
         if (gender) {

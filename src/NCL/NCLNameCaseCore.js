@@ -821,10 +821,8 @@ class NCLNameCaseCore extends NCL {
      * @return mixed Either an array with all cases, or a string with one case
      */
     getCasesConnected(indexArray, number = null) {
-        var readyArr = {};
-        for (var index of indexArray) {
-            readyArr.push(getWordCase(words[index], number));
-        }
+        var readyArr = indexArray.map((word) =>
+            this.getWordCase(word, number));
 
         var all = readyArr.length;
         if (all) {
@@ -834,7 +832,7 @@ class NCLNameCaseCore extends NCL {
 
                 var resultArr = [];
                 for (var kase = 0; kase < this.CaseCount; kase++) {
-                    var tmp = {};
+                    var tmp = [];
                     for (var i = 0; i < all; i++) {
                         tmp.push(readyArr[i][kase]);
                     }

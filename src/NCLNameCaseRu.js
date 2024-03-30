@@ -11,13 +11,13 @@ var math_min = require('locutus/php/math/min');
 var math_max = require('locutus/php/math/max');
 
 /**
- * <b>NCL NameCase Russian Language</b>
+ * **NCL NameCase Russian Language**
  * 
- * Русские правила склонения ФИО
- * Правила определения пола человека по ФИО для русского языка
- * Система разделения фамилий имен и отчеств для русского языка
+ * The declension rules of the Russian anthroponyms (Name, Surname, Patronymic).
+ * The rules for determining a person's gender by their full name for the Russian language.
+ * System of separation of surnames, names, and patronymics for the Russian language.
  * 
- * @author Андрей Чайка <bymer3@gmail.com>
+ * @author Andriy Chaika <bymer3@gmail.com>
  * @version 0.4.1
  * @package NameCaseLib
  */
@@ -26,44 +26,44 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         super();
 
         /**
-         * Версия языкового файла
-         * @var string 
+         * Language file version
+         * @var string
          */
         this._languageBuild = '11072716';
 
         /**
-         * Количество падежей в языке
+         * The number of cases in the language
          * @var int
          */
         this.CaseCount = 6;
 
         /**
-         * Список гласных русского языка
-         * @var string 
+         * Vowel Sounds
+         * @var string
          */
         this.vowels = 'аеёиоуыэюя';
 
         /**
-         * Список согласных русского языка
-         * @var string  
+         * Consonant Sounds
+         * @var string
          */
         this.consonant = 'бвгджзйклмнпрстфхцчшщ';
 
         /**
-         * Окончания имен/фамилий, который не склоняются
-         * @var array 
+         * Endings of names/surnames that are not inflected
+         * @var array
          */
         this.ovo = ['ово', 'аго', 'яго', 'ирь'];
 
         /**
-         * Окончания имен/фамилий, который не склоняются
-         * @var array 
+         * Endings of names/surnames that are not inflected
+         * @var array
          */
-        this.ih = ['их', 'ых', 'ко', 'уа'/*Бенуа, Франсуа*/];
+        this.ih = ['их', 'ых', 'ко', 'уа' /*Бенуа, Франсуа*/];
 
         /**
-         * Список окончаний характерных для фамилий 
-         * По шаблону {letter}* где * любой символ кроме тех, что в {exclude}
+         * List of endings typical for surnames
+         * According to the pattern {letter}* where * is any character except those in {exclude}
          * @var array of {letter}=>{exclude}
          */
         this.splitSecondExclude = {
@@ -113,9 +113,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские имена, оканчивающиеся на любой ь и -й, 
-     * скло­няются так же, как обычные существительные мужского рода
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine names ending in any `ь` and `-й` decline like regular masculine nouns.
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule1() {
         if (this.in(this.Last(1), 'ьй')) {
@@ -146,9 +145,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские имена, оканчивающиеся на любой твердый согласный, 
-     * склоняются так же, как обычные существительные мужского рода
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine names ending in any hard consonant decline like regular masculine nouns.
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule2() {
         if (this.in(this.Last(1), this.consonant)) {
@@ -187,11 +185,11 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские и женские имена, оканчивающиеся на -а, склоняются, как и любые 
-     * существительные с таким же окончанием
-     * Мужские и женские имена, оканчивающиеся иа -я, -ья, -ия, -ея, независимо от языка, 
-     * из которого они происходят, склоняются как существительные с соответствующими окончаниями
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine and feminine names ending in `-а` decline like nouns with the same ending.
+     * Masculine and feminine names ending in `-я`, `-ья`, `-ия`, `-ея`, regardless of their language
+     * of origin, decline like nouns with corresponding endings.
+     * 
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule3() {
         if (this.Last(1) == 'а') {
@@ -230,13 +228,12 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские фамилии, оканчивающиеся на -ь -й, склоняются так же, 
-     * как обычные существительные мужского рода
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine surnames ending in `-ь` and `-й` decline like regular masculine nouns.
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule4() {
         if (this.in(this.Last(1), 'ьй')) {
-            // Слова типа Воробей
+            // Words like "Воробей" (Sparrow)
             if (this.Last(3) == 'бей') {
 
                 this.wordForms(this.workingWord, ['ья', 'ью', 'ья', 'ьем', 'ье'], 2);
@@ -253,7 +250,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
             } else if (this.Last(2, 1) == 'ы' || this.Last(3, 1) == 'т') {
 
-                // Толстой -» ТолстЫм
+                // "Толстой" -» "ТолстЫм"
                 this.wordForms(this.workingWord, ['ого', 'ому', 'ого', 'ым', 'ом'], 2);
                 this.Rule(402);
 
@@ -261,7 +258,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
             } else if (this.Last(3) == 'чий') {
 
-                // Лесничий
+                // "Лесничий"
                 this.wordForms(this.workingWord, ['ьего', 'ьему', 'ьего', 'ьим', 'ьем'], 2);
                 this.Rule(403);
 
@@ -288,13 +285,13 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские фамилии, оканчивающиеся на -к
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine surnames ending in `-к`.
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule5() {
         if (this.Last(1) == 'к') {
-            // Если перед слово на ок, то нужно убрать о
-            if (this.Last(4) == 'енок' || this.Last(4) == 'ёнок') { // Поллок
+            // If the word ends with "ok", then "o" must be removed
+            if (this.Last(4) == 'енок' || this.Last(4) == 'ёнок') { // "Поллок"
 
                 this.wordForms(this.workingWord, ['ка', 'ку', 'ка', 'ком', 'ке'], 2);
                 this.Rule(501);
@@ -303,7 +300,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
             }
 
-            if (this.Last(2, 1) == 'е' && !in_array(this.Last(3, 1), ['р'])) { // Лотрек
+            if (this.Last(2, 1) == 'е' && !in_array(this.Last(3, 1), ['р'])) { // "Лотрек"
 
                 this.wordForms(this.workingWord, ['ька', 'ьку', 'ька', 'ьком', 'ьке'], 2);
                 this.Rule(502);
@@ -324,8 +321,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские фамили на согласный выбираем ем/ом/ым
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine surnames ending in a consonant take the endings `ем`/`ом`/`ым`.
+     * @return bool true if the rule was applied and false otherwise
      */
     manRule6() {
         if (this.Last(1) == 'ч') {
@@ -337,7 +334,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
         } else if (this.Last(2) == 'ец') {
 
-            // е перед ц выпадает
+            // dropps "е" before "ц"
             this.wordForms(this.workingWord, ['ца', 'цу', 'ца', 'цом', 'це'], 2);
             this.Rule(604);
 
@@ -363,8 +360,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские фамили на -а -я
-     * @return bool true если правило было задействовано и false если нет.  
+     * Masculine patronymics ending in `-а` `-я`.
+     * @return bool true - if the rule was used; false - otherwise
      */
     manRule7() {
         if (this.Last(1) == 'а') {
@@ -379,7 +376,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
             if (this.Last(2, 1) == 'ш') {
 
-                // Если основа на ш, то нужно и, ей
+                // If the stem is in "ш", then use "и", "ей"
                 this.wordForms(this.workingWord, ['и', 'е', 'у', 'ей', 'е'], 1);
                 this.Rule(702);
 
@@ -413,8 +410,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Не склоняются мужский фамилии
-     * @return bool true если правило было задействовано и false если нет.  
+     * Masculine surnames do not undergo declension.
+     * @return bool true if the rule was applied; false otherwise
      */
     manRule8() {
         if (this.in(this.Last(3), this.ovo) || this.in(this.Last(2), this.ih)) {
@@ -432,9 +429,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские и женские имена, оканчивающиеся на -а, склоняются, 
-     * как и любые существительные с таким же окончанием
-     * @return bool true если правило было задействовано и false если нет. 
+     * Masculine and feminine names ending in `-а` decline like any nouns with the same ending.
+     * @return true if the rule was applied; false otherwise
      */
     womanRule1() {
         if (this.Last(1) == 'а' && this.Last(2, 1) != 'и') {
@@ -446,7 +442,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
                 return true;
 
             } else {
-                // ей посля шиплячего
+                // "ей" after the sibilant
                 if (this.Last(2, 1) == 'ш') {
 
                     this.wordForms(this.workingWord, ['и', 'е', 'у', 'ей', 'е'], 1);
@@ -469,9 +465,10 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Мужские и женские имена, оканчивающиеся иа -я, -ья, -ия, -ея, независимо от языка, 
-     * из которого они происходят, склоняются как сущест­вительные с соответствующими окончаниями
-     * @return bool true если правило было задействовано и false если нет.  
+     * Masculine and feminine names ending in `-я`, `-ья`, `-ия`, `-ея`, regardless of the language
+     * they come from, decline like nouns with the corresponding endings.
+     * 
+     * @return true if the rule was applied; false otherwise
      */
     womanRule2() {
         if (this.Last(1) == 'я') {
@@ -496,9 +493,10 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Русские женские имена, оканчивающиеся на мягкий согласный, склоняются, 
-     * как существительные женского рода типа дочь, тень
-     * @return bool true если правило было задействовано и false если нет. 
+     * Russian feminine names ending in a soft consonant decline like nouns of the feminine gender,
+     * such as "дочь" (daughter), "тень" (shadow).
+     * 
+     * @return true if the rule was applied; false otherwise
      */
     womanRule3() {
         if (this.Last(1) == 'ь') {
@@ -514,9 +512,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Женские фамилия, оканчивающиеся на -а -я, склоняются,
-     * как и любые существительные с таким же окончанием
-     * @return bool true если правило было задействовано и false если нет. 
+     * Feminine surnames ending in `-а` or `-я` decline like nouns with the same ending.
+     * @return true if the rule was applied; false otherwise
      */
     womanRule4() {
         if (this.Last(1) == 'а') {
@@ -555,8 +552,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Функция пытается применить цепочку правил для мужских имен
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * Attempts to apply a sequence of rules for the male name.
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     manFirstName() {
         if (this.inNames(this.workingWord, ['Старший', 'Младший'])) {
@@ -565,7 +562,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         }
 
         if (this.inNames(this.workingWord, ['Мариа'])) {
-            // Альфонс Мария Муха
+            // "Альфонс" / "Мария" / "Муха"
             this.wordForms(this.workingWord, ['и', 'и', 'ю', 'ей', 'ии'], 1);
             return true;
         }
@@ -574,35 +571,35 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Функция пытается применить цепочку правил для женских имен
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * Attempts to apply a sequence of rules for the female name.
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     womanFirstName() {
         return this.RulesChain('woman', [1, 2, 3]);
     }
 
     /**
-     * Функция пытается применить цепочку правил для мужских фамилий
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * Attempts to apply a sequence of rules for the male surname.
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     manSecondName() {
         return this.RulesChain('man', [8, 4, 5, 6, 7]);
     }
 
     /**
-     * Функция пытается применить цепочку правил для женских фамилий
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * Attempts to apply a sequence of rules for the female surname.
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     womanSecondName() {
         return this.RulesChain('woman', [4]);
     }
 
     /**
-     * Функция склоняет мужские отчества
-     * @return boolean true - если слово было успешно изменено, false - если не получилось этого сделать
+     * Inflects the patronymic of male anthroponym.
+     * @return boolean True - if the word was successfully inflected; false - otherwise
      */
     manFatherName() {
-        // Проверяем действительно ли отчество
+        // Check is it a patronymic anthroponym
         if (this.inNames(this.workingWord, 'Ильич')) {
 
             this.wordForms(this.workingWord, ['а', 'у', 'а', 'ом', 'е']);
@@ -619,11 +616,11 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Функция склоняет женские отчества
-     * @return boolean true - если слово было успешно изменено, false - если не получилось этого сделать
+     * Inflects the patronymic of female anthroponym.
+     * @return boolean True - if the word was successfully inflected; false - otherwise
      */
     womanFatherName() {
-        // Проверяем действительно ли отчество
+        // Check is it a patronymic anthroponym
         if (this.Last(2) == 'на') {
 
             this.wordForms(this.workingWord, ['ы', 'е', 'у', 'ой', 'е'], 1);
@@ -635,8 +632,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Определение пола по правилам имен
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * Determination of gender, according to the rules of the name.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -647,8 +644,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         var man = 0;
         var woman = 0;
 
-        // Попробуем выжать максимум из имени
-        // Если имя заканчивается на й, то скорее всего мужчина
+        // Try to find the maximum info out of the name
+        // If the name ends in "й", it is most likely a masculine
 
         if (this.Last(1) == 'й') {
             man += 0.9;
@@ -702,7 +699,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
             woman += 10;
         }
 
-        // Исключение для Берил Кук, которая женщина
+        // The exception is for "Берил Кук", who is a woman
         if (this.inNames(this.workingWord, ['Берил'])) {
             woman += 0.05;
         }
@@ -711,8 +708,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Определение пола по правилам фамилий
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * Determination of gender, according to the rules of the surname.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -720,8 +717,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
 
         this.setWorkingWord(word.getWord());
 
-        var man = 0; // Мужчина
-        var woman = 0; // Женщина
+        var man = 0;
+        var woman = 0;
 
         if (this.in(this.Last(2), ['ов', 'ин', 'ев', 'ий', 'ёв', 'ый', 'ын', 'ой'])) {
             man += 0.4;
@@ -739,8 +736,8 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
     }
 
     /**
-     * Определение пола по правилам отчеств
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * Determination of gender, according to the rules of the patronymic.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -749,19 +746,20 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         this.setWorkingWord(word.getWord());
 
         if (this.Last(2) == 'ич') {
-            word.setGender(10, 0); // мужчина
+            word.setGender(10, 0); // Masculine
         }
         if (this.Last(2) == 'на') {
-            word.setGender(0, 12); // женщина
+            word.setGender(0, 12); // Feminine
         }
     }
 
     /**
-     * Идетифицирует слово определяе имя это, или фамилия, или отчество 
-     * - <b>N</b> - имя
-     * - <b>S</b> - фамилия
-     * - <b>F</b> - отчество
-     * @param NCLNameCaseWord $word обьект класса слов, который необходимо идентифицировать
+     * Analyzing the `word` and determining its anthroponym by Name, Surname, and Patronymic.
+     * - **N** - Name (First Name)
+     * - **S** - Surname (Second Name)
+     * - **F** - Father's Name (Patronymic)
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring determination
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -771,12 +769,12 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
         var length = NCLStr.strlen(namepart);
         this.setWorkingWord(namepart);
 
-        // Считаем вероятность
+        // Compute the probability of coincidence
         var first = 0;
         var second = 0;
         var father = 0;
 
-        // если смахивает на отчество
+        // similar to a patronymic anthroponym
         if (this.in(this.Last(3), ['вна', 'чна', 'вич', 'ьич'])) {
             father += 3;
         }
@@ -789,13 +787,9 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
             first += 0.5;
         }
 
-        /**
-         * буквы на которые никогда не заканчиваются имена
-         */
+        // Letters that names never end with
         if (this.in(this.Last(1), 'еёжхцочшщъыэю')) {
-            /**
-             * Просто исключения
-             */
+            // exceptions
             if (this.inNames(namepart, ['Мауриц'])) {
                 first += 10;
             } else {
@@ -803,111 +797,89 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
             }
         }
 
-        /**
-         * Используем массив характерных окончаний
-         */
+        // Use an array of specific endings
         if ((this.splitSecondExclude[this.Last(2, 1)])) {
             if (!this.in(this.Last(1), this.splitSecondExclude[this.Last(2, 1)])) {
                 second += 0.4;
             }
         }
 
-        /**
-         * Сокращенные ласкательные имена типя Аня Галя и.т.д.
-         */
+        // Abbreviated affectionate names such as "Аня", "Галя", etc.
         if (this.Last(1) == 'я' && this.in(this.Last(3, 1), this.vowels)) {
             first += 0.5;
         }
 
-        /**
-         * Не бывает имен с такими предпоследними буквами
-         */
+        // There are no names ending with such penultimate letters.
         if (this.in(this.Last(2, 1), 'жчщъэю')) {
             second += 0.3;
         }
 
-        /**
-         * Слова на мягкий знак. Существует очень мало имен на мягкий знак. Все остальное фамилии
-         */
+        // Words ending with a soft sign "ь". There are very few names ending with a soft sign.
+        // Everything else is a surname.
+
         if (this.Last(1) == 'ь') {
-            /**
-             * Имена типа нинЕЛь адЕЛь асЕЛь
-             */
+            // Names like "нинЕЛь" "адЕЛь" "асЕЛь"
             if (this.Last(3, 2) == 'ел') {
                 first += 0.7;
             }
-            /**
-             * Просто исключения
-             */
+
+            // Simply exceptions
             else if (this.inNames(namepart, ['Лазарь', 'Игорь', 'Любовь'])) {
                 first += 10;
             }
-            /**
-             * Если не то и не другое, тогда фамилия
-             */
+
+            // Otherwise, it's a surname
             else {
                 second += 0.3;
             }
         }
-        /**
-         * Если две последних букв согласные то скорее всего это фамилия
-         */
+
+        // If the last two letters are consonants, it's most likely a surname
         else if (this.in(this.Last(1), this.consonant + '' + 'ь') && this.in(this.Last(2, 1), this.consonant + '' + 'ь')) {
-            /**
-             * Практически все кроме тех которые оканчиваются на следующие буквы
-             */
+            // Almost all except those ending with the following letter combinations
+
             if (!this.in(this.Last(2), ['др', 'кт', 'лл', 'пп', 'рд', 'рк', 'рп', 'рт', 'тр'])) {
                 second += 0.25;
             }
         }
 
-        /**
-         * Слова, которые заканчиваются на тин
-         */
+        // Words ending with "тин"
         if (this.Last(3) == 'тин' && this.in(this.Last(4, 1), 'нст')) {
             first += 0.5;
         }
 
-        // Исключения
+        // Exceptions
         if (this.inNames(namepart, [
             'Лев', 'Яков', 'Вова', 'Маша', 'Ольга', 'Еремей',
             'Исак', 'Исаак', 'Ева', 'Ирина', 'Элькин', 'Мерлин', 'Макс', 'Алекс',
-            'Мариа' /*Альфонс Мариа Муха*/,
-            'Бриджет', 'Элизабет', 'Маргарет', 'Джанет', 'Жаклин', 'Эвелин'/*женские иностранные*/
+            'Мариа', // Альфонс Мариа Муха
+
+            // female foreign names
+            'Бриджет', 'Элизабет', 'Маргарет', 'Джанет', 'Жаклин', 'Эвелин'
         ]) || this.inNames(namepart, this.names_man)) {
             first += 10;
         }
 
-        /**
-         * Фамилии которые заканчиваются на -ли кроме тех что типа натАли и.т.д.
-         */
+        // Surnames ending with "-ли" except for those like "натАли" and similar.
         if (this.Last(2) == 'ли' && this.Last(3, 1) != 'а') {
             second += 0.4;
         }
 
-        /**
-         * Фамилии на -як кроме тех что типа Касьян Куприян + Ян и.т.д.
-         */
+        // Surnames ending with "-як", except for those like "Касьян", "Куприян" + "Ян" and so on.
         if (this.Last(2) == 'ян' && length > 2 && !this.in(this.Last(3, 1), 'ьи')) {
             second += 0.4;
         }
 
-        /**
-         * Фамилии на -ур кроме имен Артур Тимур
-         */
+        // Surnames ending with "-ур", except for names like "Артур", "Тимур"
         if (this.Last(2) == 'ур') {
             if (!this.inNames(namepart, ['Артур', 'Тимур'])) {
                 second += 0.4;
             }
         }
 
-        /**
-         * Разбор ласкательных имен на -ик
-         */
+        // Analysis of diminutive names ending with "-ик"
         if (this.Last(2) == 'ик') {
-            /**
-             * Ласкательные буквы перед ик
-             */
+            // Affectionate letters before "ик"
             if (this.in(this.Last(3, 1), 'лшхд')) {
                 first += 0.3;
             } else {
@@ -915,40 +887,31 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
             }
         }
 
-        /**
-         * Разбор имен и фамилий, который заканчиваются на ина
-         */
+        // Analysis of names and surnames ending with "-ина"
         if (this.Last(3) == 'ина') {
-            /**
-             * Все похожие на Катерина и Кристина
-             */
+            // All similar to "Катерина" and "Кристина"
+
             if (this.in(this.Last(7), ['атерина', 'ристина'])) {
                 first += 10;
             }
-            /**
-             * Исключения
-             */
+
+            // Exceptions
             else if (this.inNames(namepart, ['Мальвина', 'Антонина', 'Альбина', 'Агриппина', 'Фаина', 'Карина', 'Марина', 'Валентина', 'Калина', 'Аделина', 'Алина', 'Ангелина', 'Галина', 'Каролина', 'Павлина', 'Полина', 'Элина', 'Мина', 'Нина', 'Дина'])) {
                 first += 10;
             }
-            /**
-             * Иначе фамилия
-             */
+
+            // Otherwise, it's a surname
             else {
                 second += 0.4;
             }
         }
 
-        /**
-         * Имена типа Николай
-         */
+        // Names like "Николай"
         if (this.Last(4) == 'олай') {
             first += 0.6;
         }
 
-        /**
-         * Фамильные окончания
-         */
+        // Surname endings
         if (this.in(this.Last(2), ['ов', 'ин', 'ев', 'ёв', 'ый', 'ын', 'ой', 'ук', 'як', 'ца', 'ун', 'ок', 'ая', 'ёк', 'ив', 'ус', 'ак', 'яр', 'уз', 'ах', 'ай'])) {
             second += 0.4;
         }
@@ -961,7 +924,7 @@ export default class NCLNameCaseRu extends NCLNameCaseCore {
             second += 0.4;
         }
 
-        // исключения и частички
+        // Exceptions and particles
         if (this.inNames(namepart, ['да', 'валадон', 'Данбар'])) {
             second += 10;
         }

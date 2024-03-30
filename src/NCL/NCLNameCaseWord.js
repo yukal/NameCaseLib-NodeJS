@@ -10,84 +10,90 @@ var math_min = require('locutus/php/math/min');
 var math_max = require('locutus/php/math/max');
 
 /**
- * NCLNameCaseWord - класс, который служит для хранения всей информации о каждом слове
+ * NCLNameCaseWord
+ * A class that serves to store all information about each inflected word
  *
- * @author Андрей Чайка <bymer3@gmail.com>
+ * @author Andriy Chaika <bymer3@gmail.com>
  * @version 0.4.1
  * @package NameCaseLib
  */
 export default class NCLNameCaseWord {
     /**
-     * Создание нового обьекта со словом <var>$word</var>
-     * @param string $word слово
+     * Creating a new object with a specific `word`.
+     * @param string word The input string
      */
     constructor(word) {
         /**
-         * Слово в нижнем регистре, которое хранится в об’єкте класса
+         * A lowercase word stored in an object
          * @var string
          */
         this.word = '';
 
         /**
-         * Оригинальное слово
+         * An original word. The word that has been passed with the object creation and hasn't been changed
+         * by the inflection process
+         * 
          * @var string
          */
         this.word_orig = '';
 
         /**
-         * Тип текущей записи (Фамилия/Имя/Отчество)
-         * - <b>N</b> - ім’я
-         * - <b>S</b> - прізвище
-         * - <b>F</b> - по-батькові
+         * Type of current record (Surname/First name/Patronymic)
+         * - **S** - Surname (Second name)
+         * - **N** - Name (First name)
+         * - **F** - Patronymic (Father name)
+         * 
          * @var string
          */
         this.namePart = null;
 
         /**
-         * Вероятность того, что текущей слово относится к мужскому полу
+         * The rate indicating the likelihood that the current word is masculine.
          * @var int
          */
         this.genderMan = 0;
 
         /**
-         * Вероятность того, что текущей слово относится к женскому полу
+         * The rate indicating the likelihood that the current word is feminine.
          * @var int
          */
         this.genderWoman = 0;
 
         /**
-         * Окончательное решение, к какому полу относится слово
-         * - 0 - не определено
-         * - NCL::$MAN - мужской пол
-         * - NCL::$WOMAN - женский пол
+         * The final determination of the gender to which the word belongs
+         * - 0 - not determined
+         * - NCL.MAN - masculine
+         * - NCL.WOMAN - feminine
+         * 
          * @var int
          */
         this.genderSolved = 0;
 
         /**
-         * Маска больших букв в слове.
-         *
-         * Содержит информацию о том, какие буквы в слове были большими, а какие мальникими:
-         * - x - маленькая буква
-         * - X - больная буква
+         * The mask representing the set of lowercase and uppercase letters in the word
+         * - x - a  lowercase letter
+         * - X - an uppercase letter
+         * 
          * @var array
          */
         this.letterMask = [];
 
         /**
-         * Содержит true, если все слово было в верхнем регистре и false, если не было
+         * Contains true if the entire word is in uppercase, and false otherwise.
+         * Default: false
+         * 
          * @var bool
          */
         this.isUpperCase = false;
 
         /**
-         * Массив содержит все падежи слова, полученые после склонения текущего слова
+         * The array contains all the forms of the word obtained after inflecting the current word.
          * @var array
          */
         this.NameCases = [];
 
         /**
-         * Номер правила, по которому было произведено склонение текущего слова
+         * The number of the rule according to which the inflection of the current word was performed.
          * @var int
          */
         this.rule = 0;
@@ -98,10 +104,10 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Генерирует маску, которая содержит информацию о том, какие буквы в слове были большими, а какие маленькими:
-     * - x - маленькая буква
-     * - X - больная буква
-     * @param string $word слово, для которого генерировать маску
+     * Generate a mask that contains information about which letters in the word were uppercase and which were lowercase:
+     * - x - a  lowercase letter
+     * - X - an uppercase letter
+     * @param string word The word for which to generate the mask
      */
     generateMask(word) {
         var letters = NCLStr.splitLetters(word);
@@ -125,9 +131,9 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Возвращает все падежи слова в начальную маску:
-     * - x - маленькая буква
-     * - X - больная буква
+     * Returns all word cases into the initial mask:
+     * - x - a  lowercase letter
+     * - X - an uppercase letter
      */
     returnMask() {
         if (this.isUpperCase) {
@@ -166,8 +172,8 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Сохраняет результат склонения текущего слова
-     * @param array $nameCases массив со всеми падежами
+     * Saves the inflection result of the current word.
+     * @param array nameCases An array containing all the cases of the word
      */
     setNameCases(nameCases, is_return_mask = true) {
         this.NameCases = nameCases;
@@ -175,17 +181,17 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Возвращает массив со всеми падежами текущего слова
-     * @return array массив со всеми падежами
+     * Returns an array with all cases of the current word.
+     * @return array An array with all cases
      */
     getNameCases() {
         return this.NameCases;
     }
 
     /**
-     * Возвращает строку с нужным падежом текущего слова
-     * @param int $number нужный падеж
-     * @return string строка с нужным падежом текущего слова
+     * Returns a string with the desired case of the current word.
+     * @param int number The necessary case
+     * @return string
      */
     getNameCase(number) {
         if (this.NameCases[number] != undefined) {
@@ -196,15 +202,15 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Расчитывает и возвращает пол текущего слова
-     * @return int пол текущего слова
+     * Computes and returns the gender of the current word.
+     * @return int
      */
     gender() {
         if (!this.genderSolved) {
             if (this.genderMan >= this.genderWoman) {
-                this.genderSolved = NCL.$MAN;
+                this.genderSolved = NCL.MAN;
             } else {
-                this.genderSolved = NCL.$WOMAN;
+                this.genderSolved = NCL.WOMAN;
             }
         }
 
@@ -212,9 +218,10 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Устанавливает вероятности того, что даное слово является мужчиной или женщиной
-     * @param int $man вероятность того, что слово мужчина
-     * @param int $woman верятность того, что слово женщина
+     * Set both rates indicating the likelihood that the current word is masculine or feminine.
+     * 
+     * @param int man The rate indicating the likelihood that the current word is masculine
+     * @param int woman The rate indicating the likelihood that the current word is feminine
      */
     setGender(man, woman) {
         this.genderMan = man;
@@ -222,76 +229,88 @@ export default class NCLNameCaseWord {
     }
 
     /**
-     * Окончательно устанавливает пол человека
-     * - 0 - не определено
-     * - NCL::$MAN - мужчина
-     * - NCL::$WOMAN - женщина
-     * @param int $gender пол человека
+     * Finally determines the genus
+     * - 0 - not determined
+     * - NCL.MAN - masculine
+     * - NCL.WOMAN - feminine
+     * 
+     * @param int gender
      */
     setTrueGender(gender) {
         this.genderSolved = gender;
     }
 
     /**
-     * Возвращает массив вероятности того, что даное слово является мужчиной или женщиной
-     * @return array массив вероятностей
+     * Returns an array of the rate indicating the likelihood that a given word is masculine or feminine.
+     * 
+     * @return array An array with two records of
+     * 
+     * @see genderMan
+     * @see genderWoman
      */
     getGender() {
         return { [NCL.MAN]: this.genderMan, [NCL.WOMAN]: this.genderWoman };
     }
 
     /**
-     * Устанавливает тип текущего слова
-     * <b>Тип слова:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $namePart тип слова
+     * Sets the type of the current word.
+     * 
+     * **Type of word:**
+     * - S - Surname (Second name)
+     * - N - Name (First name)
+     * - F - Patronymic (Father name)
+     * 
+     * @param string namePart The anthroponym type
      */
     setNamePart(namePart) {
         this.namePart = namePart;
     }
 
     /**
-     * Возвращает тип текущего слова
-     * <b>Тип слова:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @return string $namePart тип слова
+     * Returns the type of the current word.
+     * 
+     * **Type of word:**
+     * - S - Surname (Second name)
+     * - N - Name (First name)
+     * - F - Patronymic (Father name)
+     * 
+     * @return string namePart The anthroponym type
      */
     getNamePart() {
         return this.namePart;
     }
 
     /**
-     * Возвращает текущее слово.
-     * @return string текущее слово
+     * Returns the current word
+     * @return string Current word
      */
     getWord() {
         return this.word;
     }
 
     /**
-     * Возвращает текущее оригинальное слово.
-     * @return string текущее слово
+     * Returns the original word.
+     * The word that has been passed with the object creation and hasn't been changed by the inflection process.
+     * 
+     * @return string Current word
      */
     getWordOrig() {
         return this.word_orig;
     }
 
     /**
-     * Если уже был расчитан пол для всех слов системы, тогда каждому слову предается окончательное
-     * решение. Эта функция определяет было ли принято окончательное решение.
-     * @return bool было ли принято окончательное решение по поводу пола текущего слова
+     * If gender has been computed for all words, each word is assigned a final decision.
+     * This function checks if a final decision has been made.
+     * 
+     * @return bool Whether a final decision has been made regarding the gender of the current word
      */
     isGenderSolved() {
         return (this.genderSolved ? true : false);
     }
 
     /**
-     * Устанавливает номер правила по которому склонялось текущее слово.
-     * @param int $ruleID номер правила
+     * Sets the rule number according to which the current word was inflected.
+     * @param int ruleID The number of the rule
      */
     setRule(ruleID) {
         this.rule = ruleID;

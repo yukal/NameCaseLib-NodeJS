@@ -11,13 +11,13 @@ var math_min = require('locutus/php/math/min');
 var math_max = require('locutus/php/math/max');
 
 /**
- * <b>NCL NameCase Ukranian Language</b>
+ * **NCL NameCase Ukranian Language**
  * 
- * Украинские правила склонений ФИО. 
- * Правила определения пола человека по ФИО для украинского языка
- * Система разделения фамилий имен и отчеств для украинского языка 
+ * The declension rules of the Ukrainian anthroponyms (Name, Surname, Patronymic).
+ * The rules for determining a person's gender by their full name for the Ukrainian language.
+ * System of separation of surnames, names, and patronymics for the Ukrainian language.
  * 
- * @author Андрей Чайка <bymer3@gmail.com>
+ * @author Andriy Chaika <bymer3@gmail.com>
  * @version 0.4.1
  * @package NameCaseLib
  */
@@ -26,60 +26,77 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
         super();
 
         /**
-         * Версия языкового файла
-         * @var string 
+         * Language file version
+         * @var string
          */
         this._languageBuild = '11071222';
 
         /**
-         * Количество падежей в языке
+         * The number of cases in the language
          * @var int
          */
         this.CaseCount = 7;
 
         /**
-         * Список гласных украинского языка
-         * @var string 
+         * ```yaml
+         * EN: Vowel Sounds
+         * UK: Голосні звуки
+         * ```
+         * @var string
          */
         this.vowels = 'аеиоуіїєюя';
 
         /**
-         * Список согласных украинского языка
-         * @var string  
+         * ```yaml
+         * EN: Consonant Sounds
+         * UK: Приголосні звуки
+         * ```
+         * @var string
          */
         this.consonant = 'бвгджзйклмнпрстфхцчшщ';
 
         /**
-         * Українські шиплячі приголосні 
-         * @var string 
+         * ```yaml
+         * EN: Sibilant (consonant) Sounds
+         * UK: Шиплячі (приголосні) звуки
+         * ```
+         * @var string
          */
         this.shyplyachi = 'жчшщ';
 
         /**
-         * Українські нешиплячі приголосні
-         * @var string  
+         * ```yaml
+         * EN: Hard Mute Consonants
+         * UK: Глухі тверді приголосні
+         * ```
+         * @var string
          */
         this.neshyplyachi = 'бвгдзклмнпрстфхц';
 
         /**
-         * Українські завжди м’які звуки
-         * @var string  
+         * ```yaml
+         * EN: Soft Sounds
+         * UK: М’які звуки
+         * ```
+         * @var string
          */
         this.myaki = 'ьюяєї';
 
         /**
-         * Українські губні звуки
-         * @var string 
+         * ```yaml
+         * EN: Labial Sounds
+         * UK: Губні звуки
+         * ```
+         * @var string
          */
         this.gubni = 'мвпбф';
     }
 
 
     /**
-     * Чергування українських приголосних
-     * Чергування г к х —» з ц с
-     * @param string $letter літера, яку необхідно перевірити на чергування
-     * @return string літера, де вже відбулося чергування
+     * Alternation of consonants `г` `к` `х` —» `з` `ц` `с`.
+     * @param string letter A letter that needs to be checked for the alternation
+     * @return string An alternative letter
      */
     inverseGKH(letter) {
         switch (letter) {
@@ -92,9 +109,9 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Перевіряє чи символ є апострофом чи не є
-     * @param string(1) $char симпол для перевірки
-     * @return bool true якщо символ є апострофом 
+     * Tests whether the given character is an apostrophe.
+     * @param string(1) char A symbol to check
+     * @return bool true if the character is an apostrophe
      */
     isApostrof(char) {
         if (this.in(char, ' ' + this.consonant + this.vowels)) {
@@ -105,10 +122,9 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Чергування українських приголосних
-     * Чергування г к —» ж ч
-     * @param string $letter літера, яку необхідно перевірити на чергування
-     * @return string літера, де вже відбулося чергування 
+     * Alternation of consonants `г` `к` —» `ж` `ч`.
+     * @param string letter A letter that needs to be checked for the alternation
+     * @return string An alternative letter
      */
     inverse2(letter) {
         switch (letter) {
@@ -120,34 +136,40 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * <b>Визначення групи для іменників 2-ї відміни</b>
-     * 1 - тверда
-     * 2 - мішана
-     * 3 - м’яка
+     * **Definition of noun groups for the 2nd declension**
+     * ```
+     * 1 - solid (тверда)
+     * 2 - mixed (мішана)
+     * 3 - soft (м’яка)
+     * ```
+     * **Rules:**
+     * - Nouns with stems ending in hard non-sibilant sounds belong to the solid group, such as:
+     *   береза (birch), дорога (road), Дніпро (Dnipro), шлях (path), віз (wagon), село (village), яблуко (apple).
      * 
-     * <b>Правило:</b>
-     * - Іменники з основою на твердий нешиплячий належать до твердої групи: 
-     *   береза, дорога, Дніпро, шлях, віз, село, яблуко.
-     * - Іменники з основою на твердий шиплячий належать до мішаної групи: 
-     *   пожеж-а, пущ-а, тиш-а, алич-а, вуж, кущ, плющ, ключ, плече, прізвище.
-     * - Іменники з основою на будь-який м'який чи пом'якше­ний належать до м'якої групи: 
-     *   земля [земл'а], зоря [зор'а], армія [арм'ійа], сім'я [с'імйа], серпень, фахівець, 
-     *   трамвай, су­зір'я [суз'ірйа], насіння [насін'н'а], узвишшя Іузвиш'ш'а
-     * @param string $word іменник, групу якого необхідно визначити
-     * @return int номер групи іменника 
+     * - Nouns with stems ending in hard sibilant sounds belong to the mixed group:
+     *   пожеж-а (fire), пущ-а (forest), тиш-а (silence), алич-а (cherry plum), вуж (grass snake), кущ (bush),
+     *   плющ (ivy), ключ (key), плече (shoulder), прізвище (last name).
+     * 
+     * - Nouns with stems ending in any soft or softened sound belong to the soft group:
+     *   земля [земл’а] (earth), зоря [зор’а] (star), армія [арм’ійа] (army), сім’я [с’імйа] (family),
+     *   серпень (August), фахівець (specialist), трамвай (tram), сузір’я [суз’ірйа] (constellation),
+     *   насіння [насін’н’а] (seeds), узвишшя (hill).
+     * 
+     * @param string word The noun for which the group needs to be determined
+     * @return int The noun group number
      */
     detect2Group(word) {
         var osnova = word;
         var stack = [];
 
-        // Ріжемо слово поки не зустрінемо приголосний і записуемо в стек всі голосні які зустріли
+        // Cut the word until we encounter a consonant and push all vowels encountered onto the stack
         while (this.in(NCLStr.substr(osnova, -1, 1), this.vowels + 'ь')) {
             stack.push(NCLStr.substr(osnova, -1, 1));
             osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 1);
         }
 
         var stacksize = stack.length;
-        var Last = 'Z'; // нульове закінчення
+        var Last = 'Z'; // zero termination
 
         if (stacksize) {
             Last = stack[stack.length - 1];
@@ -165,10 +187,12 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Шукаємо в слові <var>$word</var> перше входження літери з переліку <var>$vowels</var> з кінця
-     * @param string $word слово, якому необхідно знайти голосні
-     * @param string $vowels перелік літер, які треба знайти
-     * @return string(1) перша з кінця літера з переліку <var>$vowels</var>
+     * Search for the first occurrence of a letter from the list of `vowels` in the `word`,
+     * starting from the end.
+     * 
+     * @param string word A word in which vowels must be found
+     * @param string vowels A list of letters to be found
+     * @return string(1) The first letter from the end of the list of `vowels`
      */
     FirstLastVowel(word, vowels) {
         var length = NCLStr.strlen(word);
@@ -183,14 +207,15 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Пошук основи іменника <var>$word</var>
-     * <b>Основа слова</b> - це частина слова (як правило незмінна), яка вказує на його лексичне значення.
-     * @param string $word слово, в якому необхідно знати основу
-     * @return string основа іменника <var>$word</var>
+     * Search for the stem of the noun `word`.
+     * The **stem of a word** is a typically unchanged part that indicates its lexical meaning.
+     * 
+     * @param string word The word in which the stem must be found
+     * @return string основа іменника `word`
      */
     getOsnova(word) {
         var osnova = word;
-        // Ріжемо слово поки не зустрінемо приголосний
+        // Cut the word until we encounter a consonant
 
         while (this.in(NCLStr.substr(osnova, -1, 1), this.vowels + 'ь')) {
             osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 1);
@@ -200,23 +225,24 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Українські чоловічі та жіночі імена, що в називному відмінку однини закінчуються на -а (-я),
-     * відмінються як відповідні іменники І відміни.
-     * <ul>
-     * <li>Примітка 1. Кінцеві приголосні основи г, к, х у жіночих іменах 
-     *   у давальному та місцевому відмінках однини перед закінченням -і 
-     *   змінюються на з, ц, с: Ольга - Ользі, Палажка - Палажці, Солоха - Солосі.</li>
-     * <li>Примітка 2. У жіночих іменах типу Одарка, Параска в родовому відмінку множини 
-     *   в кінці основи між приголосними з'являється звук о: Одарок, Парасок. </li>
-     * </ul>
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Ukrainian masculine and feminine names ending in -а (-я) in the nominative singular
+     * are declined similarly to corresponding nouns of the first declension.
+     * 
+     * - Note 1. The final consonants of the stem in feminine names, such as `г`, `к`, `х`,
+     *   change to `з`, `ц`, `с` in the dative and locative singular before the ending `-і`: 
+     *   Оль**г**а - Оль**з**і, Пала**жк**а - Пала**жц**і, Соло**х**а - Соло**с**і.
+     * 
+     * - Note 2. In feminine names like Одарка, Параска, in the genitive plural,
+     *   the sound о appears in the stem between consonants: Одарок, Парасок.
+     * 
+     * @return boolean true - if a rule from the list was applied, false - if the rule was not found
      */
     manRule1() {
-        // Предпоследний символ
+        // Penultimate char
         var BeforeLast = this.Last(2, 1);
         var invBeforeLast = this.inverseGKH(BeforeLast);
 
-        // Останні літера або а
+        // The last letter or "а"
         if (this.Last(1) == 'а') {
             this.wordForms(this.workingWord, [BeforeLast + 'и', invBeforeLast + 'і', BeforeLast + 'у', BeforeLast + 'ою', invBeforeLast + 'і', BeforeLast + 'о'], 2);
             this.Rule(101);
@@ -224,9 +250,9 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             return true;
         }
 
-        // Остання літера я
+        // The last letter "я"
         else if (this.Last(1) == 'я') {
-            // Перед останньою літерою стоїть я
+            // The last letter is preceded by "я"
             if (BeforeLast == 'і') {
 
                 this.wordForms(this.workingWord, ['ї', 'ї', 'ю', 'єю', 'ї', 'є'], 1);
@@ -248,9 +274,10 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Імена, що в називному відмінку закінчуються на -р, у родовому мають закінчення -а: 
-     * Віктор - Віктора, Макар - Макара, але: Ігор - Ігоря, Лазар - Лазаря.
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Names ending in `-р` in the nominative case have `-а` in the genitive:
+     * Віктор - Віктора, Макар - Макара, but: Ігор - Ігоря, Лазар - Лазаря.
+     * 
+     * @return boolean true - if a rule from the list was applied, false - if no rule was found
      */
     manRule2() {
         if (this.Last(1) == 'р') {
@@ -281,21 +308,24 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Українські чоловічі імена, що в називному відмінку однини закінчуються на приголосний та -о, 
-     * відмінюються як відповідні іменники ІІ відміни.
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено 
+     * Ukrainian masculine names ending in a consonant and `-о` in the nominative singular are declined
+     * like corresponding nouns of the second declension.
+     * 
+     * @return boolean true - if a rule from the list was applied, false - if no rule was found
      */
     manRule3() {
-        // Предпоследний символ
+        // Penultimate char
         var BeforeLast = this.Last(2, 1);
 
         if (this.in(this.Last(1), this.consonant + 'оь')) {
             var group = this.detect2Group(this.workingWord);
             var osnova = this.getOsnova(this.workingWord);
 
-            // В іменах типу Антін, Нестір, Нечипір, Прокіп, Сидір, Тиміш, Федір голосний і виступає тільки в
-            // називному відмінку, у непрямих - о: Антона, Антонові
-            // Чергування і -» о всередині
+            // Vowel alternation "і" to "о" inside.
+            // 
+            // In names like "Антін", "Нестір", "Нечипір", "Прокіп", "Сидір", "Тиміш", "Федір",
+            // the vowel "і" only appears in the nominative case,
+            // while in the oblique cases, it changes to "о": "Антона", "Антонові"
 
             var osLast = NCLStr.substr(osnova, -1, 1);
             var invOsLast = this.inverse2(osLast);
@@ -308,7 +338,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
                 osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 2) + 'о' + NCLStr.substr(osnova, -1, 1);
             }
 
-            // Випадання букви е при відмінюванні слів типу Орел
+            // Loss of the letter "е" when declining words like "Орел"
             if (NCLStr.substr(osnova, 0, 1) == 'о'
                 && this.FirstLastVowel(osnova, this.vowels + 'гк') == 'е'
                 && this.Last(2) != 'сь') {
@@ -318,9 +348,9 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             }
 
             if (group == 1) {
-                // Тверда група
-                // Слова що закінчуються на ок
+                // Solid group (тверда група)
 
+                // The words ending in "ок"
                 if (this.Last(2) == 'ок' && this.Last(3) != 'оок') {
                     this.wordForms(this.workingWord, ['ка', 'кові', 'ка', 'ком', 'кові', 'че'], 2);
                     this.Rule(301);
@@ -328,7 +358,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
                     return true;
                 }
 
-                // Російські прізвища на ов, ев, єв
+                // Russian patronymic surnames ending in "ов", "ев", "єв"
                 else if (this.in(this.Last(2), ['ов', 'ев', 'єв'])
                     && !this.inNames(this.workingWord, ['Лев', 'Остромов'])) {
 
@@ -338,7 +368,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
                     return true;
                 }
 
-                // Російські прізвища на ін
+                // Russian surnames ending in "ін"
                 else if (this.in(this.Last(2), ['ін'])) {
                     this.wordForms(this.workingWord, ['а', 'у', 'а', 'ом', 'у', 'е']);
                     this.Rule(303);
@@ -355,8 +385,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             }
 
             if (group == 2) {
+                // Mixed group (мішана група)
 
-                // Мішана група
                 this.wordForms(osnova, ['а', 'еві', 'а', 'ем', 'еві', 'е']);
                 this.Rule(305);
 
@@ -364,9 +394,9 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             }
 
             if (group == 3) {
-                // М’яка група
-                // Соловей
+                // Soft Group (м’яка група)
 
+                // "Соловей"
                 if (this.Last(2) == 'ей' && this.in(this.Last(3, 1), this.gubni)) {
 
                     osnova = NCLStr.substr(this.workingWord, 0, NCLStr.strlen(this.workingWord) - 2) + '’';
@@ -385,7 +415,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
                 }
 
-                // Швець
+                // "Швець"
                 else if (this.workingWord == 'швець') {
 
                     this.wordForms(this.workingWord, ['евця', 'евцеві', 'евця', 'евцем', 'евцеві', 'евцю'], 4);
@@ -395,7 +425,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
                 }
 
-                // Слова що закінчуються на ець
+                // The words ending in "ець"
                 else if (this.Last(3) == 'ець') {
 
                     this.wordForms(this.workingWord, ['ця', 'цеві', 'ця', 'цем', 'цеві', 'цю'], 3);
@@ -405,7 +435,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
                 }
 
-                // Слова що закінчуються на єць яць
+                // The words ending in "єць", "яць"
                 else if (this.in(this.Last(3), ['єць', 'яць'])) {
 
                     this.wordForms(this.workingWord, ['йця', 'йцеві', 'йця', 'йцем', 'йцеві', 'йцю'], 3);
@@ -428,8 +458,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Якщо слово закінчується на і, то відмінюємо як множину
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * If a word ends in `і`, it is declined as a plural.
+     * @return boolean true - if the rule from the list was applied, false - if the rule was not found
      */
     manRule4() {
         if (this.Last(1) == 'і') {
@@ -445,8 +475,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Якщо слово закінчується на ий або ой
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено 
+     * If a word ends in `ий` or `ой`.
+     * @return boolean true - if the rule from the list was applied, false - if the rule was not found
      */
     manRule5() {
         if (this.in(this.Last(2), ['ий', 'ой'])) {
@@ -462,21 +492,24 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Українські чоловічі та жіночі імена, що в називному відмінку однини закінчуються на -а (-я), 
-     * відмінються як відповідні іменники І відміни.  
-     * - Примітка 1. Кінцеві приголосні основи г, к, х у жіночих іменах 
-     *   у давальному та місцевому відмінках однини перед закінченням -і 
-     *   змінюються на з, ц, с: Ольга - Ользі, Палажка - Палажці, Солоха - Солосі.
-     * - Примітка 2. У жіночих іменах типу Одарка, Параска в родовому відмінку множини 
-     *   в кінці основи між приголосними з'являється звук о: Одарок, Парасок 
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено 
+     * Ukrainian masculine and feminine names ending in `-а` `-я` in the nominative singular
+     * are declined like corresponding nouns of the first declension.
+     * 
+     * - Note 1. The final consonants of the stems `г`, `к`, `х` in feminine names in the dative
+     *   and locative singular before the ending `-і` change to `з`, `ц`, `с`:
+     *   Ольга - Ользі, Палажка - Палажці, Солоха - Солосі.
+     * 
+     * - Note 2. In feminine names like Одарка, Параска, in the genitive plural the sound `о`
+     *   appears at the end of the stem between consonants: Одарок, Парасок.
+     * 
+     * @return boolean true - if the rule from the list was applied, false - if the rule was not found
      */
     womanRule1() {
-        // Предпоследний символ
+        // Penultimate char
         var BeforeLast = this.Last(2, 1);
         var invBeforeLast = this.inverseGKH(BeforeLast);
 
-        // Якщо закінчується на ніга -» нога
+        // The words ending in "ніга" -» "нога"
         if (this.Last(4) == 'ніга') {
             var osnova = NCLStr.substr(this.workingWord, 0, NCLStr.strlen(this.workingWord) - 3) + 'о';
 
@@ -486,7 +519,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             return true;
         }
 
-        // Останні літера або а
+        // The last letter or "а"
         else if (this.Last(1) == 'а') {
 
             this.wordForms(this.workingWord, [BeforeLast + 'и', invBeforeLast + 'і', BeforeLast + 'у', BeforeLast + 'ою', invBeforeLast + 'і', BeforeLast + 'о'], 2);
@@ -496,7 +529,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
         }
 
-        // Остання літера я
+        // The last letter "я"
         else if (this.Last(1) == 'я') {
             if (this.in(BeforeLast, this.vowels) || this.isApostrof(BeforeLast)) {
 
@@ -519,9 +552,10 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Українські жіночі імена, що в називному відмінку однини закінчуються на приголосний, 
-     * відмінюються як відповідні іменники ІІІ відміни
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено 
+     * Ukrainian feminine names ending in a consonant in the nominative singular are declined like
+     * corresponding nouns of the third declension.
+     * 
+     * @return boolean true - if the rule from the list was applied, false - if the rule was not found
      */
     womanRule2() {
         if (this.in(this.Last(1), this.consonant + 'ь')) {
@@ -531,18 +565,18 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
             var osLast = NCLStr.substr(osnova, -1, 1);
             var osBeforeLast = NCLStr.substr(osnova, -2, 1);
 
-            // Чи треба ставити апостроф
+            // Determines whether to put an apostrophe
             if (this.in(osLast, 'мвпбф') && this.in(osBeforeLast, this.vowels)) {
                 apostrof = '’';
             }
 
-            // Чи треба подвоювати
+            // Determines whether to double
             if (this.in(osLast, 'дтзсцлн')) {
                 duplicate = osLast;
             }
 
 
-            // Відмінюємо
+            // Decline
             if (this.Last(1) == 'ь') {
 
                 this.wordForms(osnova, ['і', 'і', 'ь', duplicate + apostrof + 'ю', 'і', 'е']);
@@ -564,14 +598,14 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Якщо слово на ськ або це російське прізвище
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено 
+     * If the word ends in `ськ` or a Russian surname is encountered.
+     * @return boolean true - if the rule from the list was applied, false - if the rule was not found
      */
     womanRule3() {
-        // Предпоследний символ
+        // Penultimate letter
         var BeforeLast = this.Last(2, 1);
 
-        // Донская
+        // "Донская"
         if (this.Last(2) == 'ая') {
 
             this.wordForms(this.workingWord, ['ої', 'ій', 'ую', 'ою', 'ій', 'ая'], 2);
@@ -581,7 +615,7 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
         }
 
-        // Ті що на ськ
+        // The words ending in "ськ"
         if (this.Last(1) == 'а' && (this.in(this.Last(2, 1), 'чнв') || this.in(this.Last(3, 2), ['ьк']))) {
 
             this.wordForms(this.workingWord, [BeforeLast + 'ої', BeforeLast + 'ій', BeforeLast + 'у', BeforeLast + 'ою', BeforeLast + 'ій', BeforeLast + 'о'], 2);
@@ -595,40 +629,40 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Функція намагається застосувати ланцюг правил для чоловічих імен
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Attempts to apply a sequence of rules for the male name.
+     * @return boolean True if any of the rules were applied; False otherwise
      */
     manFirstName() {
         return this.RulesChain('man', [1, 2, 3]);
     }
 
     /**
-     * Функція намагається застосувати ланцюг правил для жіночих імен
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Attempts to apply a sequence of rules for the female name.
+     * @return boolean True if any of the rules were applied; False otherwise
      */
     womanFirstName() {
         return this.RulesChain('woman', [1, 2]);
     }
 
     /**
-     * Функція намагається застосувати ланцюг правил для чоловічих прізвищ
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Attempts to apply a sequence of rules for the male surname.
+     * @return boolean True if any of the rules were applied; False otherwise
      */
     manSecondName() {
         return this.RulesChain('man', [5, 1, 2, 3, 4]);
     }
 
     /**
-     * Функція намагається застосувати ланцюг правил для жіночих прізвищ
-     * @return boolean true - якщо було задіяно правило з переліку, false - якщо правило не знайдено
+     * Attempts to apply a sequence of rules for the female surname.
+     * @return boolean True if any of the rules were applied; False otherwise
      */
     womanSecondName() {
         return this.RulesChain('woman', [3, 1]);
     }
 
     /**
-     * Фунція відмінює чоловічі по-батькові
-     * @return boolean true - якщо слово успішно змінене, false - якщо невдалося провідміняти слово
+     * Inflects the patronymic of male anthroponym.
+     * @return boolean True - if the word was successfully inflected; false - otherwise
      */
     manFatherName() {
         if (this.in(this.Last(2), ['ич', 'іч'])) {
@@ -642,8 +676,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Фунція відмінює жіночі по-батькові
-     * @return boolean true - якщо слово успішно змінене, false - якщо невдалося провідміняти слово
+     * Inflects the patronymic of female anthroponym.
+     * @return boolean True - if the word was successfully inflected; false - otherwise
      */
     womanFatherName() {
         if (this.in(this.Last(3), ['вна'])) {
@@ -657,8 +691,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Визначення статі, за правилами імені
-     * @param NCLNameCaseWord $word об’єкт класу зі словом, для якого необхідно визначити стать
+     * Determination of gender, according to the rules of the name.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -666,11 +700,11 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
         this.setWorkingWord(word.getWord());
 
-        var man = 0; // Мужчина
-        var woman = 0; // Женщина
+        var man = 0;
+        var woman = 0;
 
-        // Попробуем выжать максимум из имени
-        // Если имя заканчивается на й, то скорее всего мужчина
+        // Try to find the maximum info out of the name
+        // If the name ends in "й", it is most likely a masculine
 
         if (this.Last(1) == 'й') {
             man += 0.9;
@@ -708,8 +742,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Визначення статі, за правилами прізвища
-     * @param NCLNameCaseWord $word об’єкт класу зі словом, для якого необхідно визначити стать
+     * Determination of gender, according to the rules of the surname.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -717,8 +751,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
 
         this.setWorkingWord(word.getWord());
 
-        var man = 0; // Мужчина
-        var woman = 0; // Женщина
+        var man = 0;
+        var woman = 0;
 
         if (this.in(this.Last(2), ['ов', 'ин', 'ев', 'єв', 'ін', 'їн', 'ий', 'їв', 'ів', 'ой', 'ей'])) {
             man += 0.4;
@@ -736,8 +770,8 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
     }
 
     /**
-     * Визначення статі, за правилами по-батькові
-     * @param NCLNameCaseWord $word об’єкт класу зі словом, для якого необхідно визначити стать
+     * Determination of gender, according to the rules of the patronymic.
+     * @param NCLNameCaseWord word An object with the word for which itʼs necessary to determine the gender
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -746,20 +780,21 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
         this.setWorkingWord(word.getWord());
 
         if (this.Last(2) == 'ич') {
-            word.setGender(10, 0); // мужчина
+            word.setGender(10, 0); // Masculine
         }
 
         if (this.Last(2) == 'на') {
-            word.setGender(0, 12); // женщина
+            word.setGender(0, 12); // Feminine
         }
     }
 
     /**
-     * Ідентифікує слово визначаючи чи це ім’я, чи це прізвище, чи це побатькові
-     * - <b>N</b> - ім’я
-     * - <b>S</b> - прізвище
-     * - <b>F</b> - по-батькові
-     * @param NCLNameCaseWord $word об’єкт класу зі словом, яке необхідно ідентифікувати
+     * Analyzing the `word` and determining its anthroponym by Name, Surname, and Patronymic.
+     * - **N** - Name (First Name)
+     * - **S** - Surname (Second Name)
+     * - **F** - Father’s Name (Patronymic)
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring determination
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -768,27 +803,27 @@ export default class NCLNameCaseUa extends NCLNameCaseCore {
         var namepart = word.getWord();
         this.setWorkingWord(namepart);
 
-        // Считаем вероятность
+        // Compute the probability of coincidence
         var first = 0;
         var second = 0;
         var father = 0;
 
-        // если смахивает на отчество
+        // similar to a patronymic anthroponym
         if (this.in(this.Last(3), ['вна', 'чна', 'ліч']) || this.in(this.Last(4), ['ьмич', 'ович'])) {
             father += 3;
         }
 
-        // Похоже на имя
+        // similar to a first name anthroponym
         if (this.in(this.Last(3), ['тин' /* {endings_sirname3} */]) || this.in(this.Last(4), ['ьмич', 'юбов', 'івна', 'явка', 'орив', 'кіян' /* {endings_sirname4} */])) {
             first += 0.5;
         }
 
-        // Исключения
+        // exceptions
         if (this.inNames(namepart, ['Лев', 'Гаїна', 'Афіна', 'Антоніна', 'Ангеліна', 'Альвіна', 'Альбіна', 'Аліна', 'Павло', 'Олесь', 'Микола', 'Мая', 'Англеліна', 'Елькін', 'Мерлін'])) {
             first += 10;
         }
 
-        // похоже на фамилию
+        // similar to a second name anthroponym
         if (this.in(this.Last(2), ['ов', 'ін', 'ев', 'єв', 'ий', 'ин', 'ой', 'ко', 'ук', 'як', 'ца', 'их', 'ик', 'ун', 'ок', 'ша', 'ая', 'га', 'єк', 'аш', 'ив', 'юк', 'ус', 'це', 'ак', 'бр', 'яр', 'іл', 'ів', 'ич', 'сь', 'ей', 'нс', 'яс', 'ер', 'ай', 'ян', 'ах', 'ць', 'ющ', 'іс', 'ач', 'уб', 'ох', 'юх', 'ут', 'ча', 'ул', 'вк', 'зь', 'уц', 'їн', 'де', 'уз', 'юр', 'ік', 'іч', 'ро' /* {endings_name2} */])) {
             second += 0.4;
         }

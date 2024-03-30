@@ -4,102 +4,102 @@
  */
 
 /**
- * Класс, который содержит основные константы библиотеки:
- * - индексы мужского и женского пола
- * - индексы всех падежей
+ * A class that contains the main library constants:
+ * - male and female genus indices
+ * - indices of all cases
  * 
- * @author Андрей Чайка <bymer3@gmail.com>
+ * @author Andriy Chaika <bymer3@gmail.com>
  * @version 0.4.1
  * @package NameCaseLib
  */
 export default class NCL {
     /**
-     * Мужской пол
+     * Masculine gender
      * @static integer
      */
     static get MAN() { return 1; }
 
     /**
-     * Женский пол
-     * @static integer 
+     * Feminine gender
+     * @static integer
      */
     static get WOMAN() { return 2; }
 
     /**
-     * Именительный падеж
-     * @static integer 
+     * Nominative case
+     * @static integer
      */
     static get IMENITLN() { return 0; }
 
     /**
-     * Родительный падеж
-     * @static integer 
+     * Genitive case
+     * @static integer
      */
     static get RODITLN() { return 1; }
 
     /**
-     * Дательный падеж
-     * @static integer 
+     * Dative case
+     * @static integer
      */
     static get DATELN() { return 2; }
 
     /**
-     * Винительный падеж
-     * @static integer 
+     * Accusative case
+     * @static integer
      */
     static get VINITELN() { return 3; }
 
     /**
-     * Творительный падеж
-     * @static integer 
+     * Instrumental case
+     * @static integer
      */
     static get TVORITELN() { return 4; }
 
     /**
-     * Предложный падеж
-     * @static integer 
+     * Prepositional case
+     * @static integer
      */
     static get PREDLOGN() { return 5; }
 
     /**
-     * Назвиний відмінок
-     * @static integer 
+     * Nominative case
+     * @static integer
      */
     static get UaNazyvnyi() { return 0; }
 
     /**
-     * Родовий відмінок
-     * @static integer 
+     * Genitive case
+     * @static integer
      */
     static get UaRodovyi() { return 1; }
 
     /**
-     * Давальний відмінок
-     * @static integer 
+     * Dative case
+     * @static integer
      */
     static get UaDavalnyi() { return 2; }
 
     /**
-     * Знахідний відмінок
-     * @static integer 
+     * Accusative case
+     * @static integer
      */
     static get UaZnahidnyi() { return 3; }
 
     /**
-     * Орудний відмінок
-     * @static integer 
+     * Instrumental case
+     * @static integer
      */
     static get UaOrudnyi() { return 4; }
 
     /**
-     * Місцевий відмінок
-     * @static integer 
+     * Locative case
+     * @static integer
      */
     static get UaMiszevyi() { return 5; }
 
     /**
-     * Кличний відмінок
-     * @static integer 
+     * Vocative case
+     * @static integer
      */
     static get UaKlychnyi() { return 6; }
 

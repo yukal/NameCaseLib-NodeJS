@@ -21,12 +21,16 @@ var array_key_exists = require('locutus/php/array/array_key_exists'),
     key_exists = array_key_exists;
 
 /**
- * <b>NCL NameCase Core</b>
- *
- * Набор основных функций, который позволяют сделать интерфейс слонения русского и украниского языка
- * абсолютно одинаковым. Содержит все функции для внешнего взаимодействия с библиотекой.
- *
- * @author Андрей Чайка <bymer3@gmail.com>
+ * **NCL NameCase Core**
+ * 
+ * The set of core functions enables making the interface for Ukrainian and Russian language inflection
+ * absolutely identical. It contains all the functions for external interaction with the library.
+ * 
+ * Inflection refers to the modification of a word to express different grammatical categories such as
+ * tense, mood, aspect, voice, person, number, gender, and case. In languages like Russian and Ukrainian,
+ * inflection plays a significant role in indicating these grammatical features.
+ * 
+ * @author Andriy Chaika <bymer3@gmail.com>
  * @version 0.4.1
  * @package NameCaseLib
  */
@@ -35,78 +39,93 @@ export default class NCLNameCaseCore extends NCL {
         super();
 
         /**
-         * Версия библиотеки
+         * Library version
          * @var string
          */
         this._version = '0.4.1';
 
         /**
-         * Версия языкового файла
+         * Language file version
          * @var string
          */
         this._languageBuild = '0';
 
         /**
-         * Готовность системы:
-         * - Все слова идентифицированы (известо к какой части ФИО относится слово)
-         * - У всех слов определен пол
-         * Если все сделано стоит флаг true, при добавлении нового слова флаг сбрасывается на false
+         * System readiness:
+         * - All words have been identified (it is known which part of the full name the word belongs to);
+         * - Gender has been determined for all words;
+         * 
+         * If everything is done, the flag is set to true. When adding a new word, the flag is reset to false
+         * 
          * @var bool
          */
         this.ready = false;
 
         /**
-         * Если все текущие слова было просклонены и в каждом слове уже есть результат склонения,
-         * тогда true. Если было добавлено новое слово флаг збрасывается на false
+         * If all current words have been processed and each word already has a declension result, then true.
+         * If a new word has been added, the flag is reset to false.
+         * 
          * @var bool
          */
         this.finished = false;
 
         /**
-         * Массив содержит елементы типа NCLNameCaseWord. Это все слова которые нужно обработать и просклонять
+         * The words array contains elements of NCLNameCaseWord type. It contains words that need to be
+         * processed using inflection.
+         * 
          * @var array
          */
         this.words = [];
 
         /**
-         * Переменная, в которую заносится слово с которым сейчас идет работа
+         * A variable containing the word over which declension is performed.
          * @var string
          */
         this.workingWord = '';
 
         /**
-         * Метод Last() вырезает подстроки разной длины. Посколько одинаковых вызовов бывает несколько,
-         * то все результаты выполнения кешируются в этом массиве.
+         * Cache for the method Last().
+         * 
+         * Since the method Last() may be called multiple times with the same parameters during the inflection process,
+         * its subsequent invocation with the same parameters will immediately return the previously recorded result.
+         * 
+         * @see Last
          * @var array
          */
         this.workindLastCache = [];
 
         /**
-         * Номер последнего использованого правила, устанавливается методом Rule()
+         * The number of the last used rule. Set by the method Rule().
+         * 
+         * @see Rule
          * @var int
          */
         this.lastRule = 0;
 
         /**
-         * Массив содержит результат склонения слова - слово во всех падежах
+         * The array contains the results of word declension - the word in all cases.
          * @var array
          */
         this.lastResult = [];
 
         /**
-         * Массив содержит информацию о том какие слова из массива <var>$this->words</var> относятся к
-         * фамилии, какие к отчеству а какие к имени. Массив нужен потому, что при добавлении слов мы не
-         * всегда знаем какая часть ФИО сейчас, поэтому после идентификации всех слов генерируется массив
-         * индексов для быстрого поиска в дальнейшем.
+         * The array contains information about which words from the `this.words` array relate to surnames
+         * that include a given name in addition to their patronymic. This array is necessary because when
+         * adding words, we may not always know their position within the full name.
+         * Therefore, after identifying all the words, the array indices are automatically converted for
+         * quick future reference.
+         * 
          * @var array
          */
         this.index = {};
 
-        this.gender_koef = 0; // вероятность автоопредления пола [0..10]. Достаточно точно при 0.1
+        // Probability of automatic gender detection [0..10]. Fairly accurate at 0.1
+        this.gender_koef = 0;
     }
 
     /**
-     * Метод очищает результаты последнего склонения слова. Нужен при склонении нескольких слов.
+     * Clears the results of the last declension for a word. This is necessary when declension is performed
+     * for multiple words.
      */
     reset() {
         this.lastRule = 0;
@@ -114,8 +133,9 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Сбрасывает все информацию на начальную. Очищает все слова добавленые в систему.
-     * После выполнения система готова работать с начала.
+     * Resets all information to its initial state. Clears all words added to this object.
+     * After execution, the object is ready to work from the beginning.
+     * 
      * @return NCLNameCaseCore
      */
     fullReset() {
@@ -128,7 +148,7 @@ export default class NCLNameCaseCore extends NCL {
     };
 
     /**
-     * Устанавливает флаги о том, что система не готово и слова еще не были просклонены
+     * Sets flags indicating that the object is not ready and words have not yet been inflected.
      */
     notReady() {
         this.ready = false;
@@ -136,51 +156,60 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Устанавливает номер последнего правила
-     * @param int $index номер правила которое нужно установить
+     * Sets the number of the last rule.
+     * @param int index The rule number to be set
      */
     Rule(index) {
         this.lastRule = index;
     }
 
     /**
-     * Устанавливает слово текущим для работы системы. Очищает кеш слова.
-     * @param string $word слово, которое нужно установить
+     * Set the current word for the inflection process and clear cache.
+     * @param string word The word to be set
      */
     setWorkingWord(word) {
-        // Сбрасываем настройки
+        // Reset the settings
         this.reset();
 
-        // Ставим слово
+        // Set a new word
         this.workingWord = word;
 
-        // Чистим кеш
+        // Clear the cache
         this.workindLastCache = [];
     }
 
     /**
-     * Если не нужно склонять слово, делает результат таким же как и именительный падеж
+     * If there is no need to inflect a word, then set the result to the same as the nominative case.
      */
     makeResultTheSame() {
         this.lastResult = array_fill(0, this.CaseCount, this.workingWord);
     }
 
     /**
-     * Если <var>$stopAfter</var> = 0, тогда вырезает $length последних букв с текущего слова (<var>$this->workingWord</var>)
-     * Если нет, тогда вырезает <var>$stopAfter</var> букв начиная от <var>$length</var> с конца
-     * @param int $length количество букв с конца
-     * @param int $stopAfter количество букв которые нужно вырезать (0 - все)
-     * @return string требуемая подстрока
+     * Returns the portion of string.
+     * 
+     * The returned string will start at the position specified by the `length` parameter, starting from the
+     * right side of the string to the end of the string. For instance, in the string 'abcdef', the character
+     * at position 1 is 'f', the character at position 2 is 'e', and so forth.
+     * 
+     * In the case when the optional parameter `stopAfter` is specified, the returned string will contain a
+     * portion of the cut string whose length is determined by the `stopAfter` parameter.
+     * 
+     * Example:
+     * 'abcdef' -> Last(3, 2) -> 'de'
+     * 
+     * @param int length Number of letters from the end
+     * @param int stopAfter (optional) Number of letters to be cut (0 - all of them)
+     * @return string Portion of string from the right side
      */
     Last(length = 1, stopAfter = 0) {
-        // Сколько букв нужно вырезать все или только часть
         if (!stopAfter) {
             var cut = length;
         } else {
             cut = stopAfter;
         }
 
-        // Проверяем кеш
+        // Check the cache
         if (this.workindLastCache[length] == undefined)
             this.workindLastCache[length] = [];
         if (this.workindLastCache[length][stopAfter] == undefined) {
@@ -191,11 +220,18 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Над текущим словом (<var>$this->workingWord</var>) выполняются правила в порядке указаном в <var>$rulesArray</var>.
-     * <var>$gender</var> служит для указания какие правила использовать мужские ('man') или женские ('woman')
-     * @param string $gender - префикс мужских/женских правил
-     * @param array $rulesArray - массив, порядок выполнения правил
-     * @return boolean если правило было задествовано, тогда true, если нет - тогда false
+     * Executes the rules step by step according to the passed parameters, and returns the success flag of
+     * the operation.
+     * 
+     * Example:
+     * ```
+     * this.RulesChain('man', [1, 2, 3]);
+     * this.RulesChain('woman', [1, 2]);
+     * ```
+     * 
+     * @param string gender What kind of cases should be used [masculine | feminine]
+     * @param array rulesArray - An array of integers indicating the order in which the rules are executed
+     * @return boolean True if any of the rules were applied; False otherwise
      */
     RulesChain(gender, rulesArray) {
         for (var ruleID of rulesArray) {
@@ -212,14 +248,17 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Если <var>$string</var> строка, тогда проверяется входит ли буква <var>$letter</var> в строку <var>$string</var>
-     * Если <var>$string</var> массив, тогда проверяется входит ли строка <var>$letter</var> в массив <var>$string</var>
-     * @param string $letter буква или строка, которую нужно искать
-     * @param mixed $string строка или массив, в котором нужно искать
-     * @return bool true если искомое значение найдено
+     * Search string inside array or letter in string.
+     * 
+     * If a string is passed as the second parameter, then it will check for the letter `letter` is included in the string `string`.
+     * If an array is passed as the second parameter, then it will check for the string `letter` is included in the array `string`.
+     * 
+     * @param string letter Letter or String to search for
+     * @param mixed string String or Array to search in
+     * @return bool True if the required value is found
      */
     in(letter, string) {
-        // Если второй параметр массив
+        // If an array was passed as the second parameter
         if (is_array(string)) {
 
             return in_array(letter, string);
@@ -238,9 +277,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция проверяет, входит ли имя <var>$nameNeedle</var> в перечень имен <var>$names</var>.
-     * @param string $nameNeedle - имя которое нужно найти
-     * @param array $names - перечень имен в котором нужно найти имя
+     * The function checks whether the name `nameNeedle` is included in the list of names `names`.
+     * 
+     * @param string nameNeedle The name to be found
+     * @param array names A list of names in which to find a name
      */
     inNames(nameNeedle, names) {
         if (!is_array(names)) {
@@ -257,20 +297,21 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет слово <var>$word</var>, удаляя из него <var>$replaceLast</var> последних букв
-     * и добавляя в каждый падеж окончание из массива <var>$endings</var>.
-     * @param string $word слово, к которому нужно добавить окончания
-     * @param array $endings массив окончаний
-     * @param int $replaceLast сколько последних букв нужно убрать с начального слова
+     * It inflects the `word`, removing the last letters from the `replaceLast`
+     * and adding an `endings` array to each case.
+     * 
+     * @param string word The word to which to add an ending
+     * @param array endings The collection of word endings
+     * @param int replaceLast How many last letters must be removed from the initial word
      */
     wordForms(word, endings, replaceLast = 0) {
-        // Создаем массив с именительный падежом
+        // Create an array with the nominative case
         var result = [this.workingWord];
 
-        // Убираем в окончание лишние буквы
+        // Remove the extra letters at the end
         word = NCLStr.substr(word, 0, NCLStr.strlen(word) - replaceLast);
 
-        // Добавляем окончания
+        // Add endings
         for (var padegIndex = 1; padegIndex < this.CaseCount; padegIndex++) {
             result[padegIndex] = word + endings[padegIndex - 1];
         }
@@ -279,9 +320,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$firstname</var> и пометкой, что это имя
-     * @param string $firstname имя
+     * Creates a new instance of the `NCLNameCaseWord` including a `firstname` parameter and adds it
+     * to the `words` array.
+     * 
+     * @param string firstname
      * @return NCLNameCaseCore
      */
     setFirstName(firstname = '') {
@@ -297,9 +339,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$secondname</var> и пометкой, что это фамилия
-     * @param string $secondname фамилия
+     * Creates a new instance of the `NCLNameCaseWord` including a `secondname` parameter and adds it
+     * to the `words` array.
+     * 
+     * @param string secondname
      * @return NCLNameCaseCore
      */
     setSecondName(secondname = '') {
@@ -315,9 +358,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$fathername</var> и пометкой, что это отчество
-     * @param string $fathername отчество
+     * Creates a new instance of the `NCLNameCaseWord` including a `fathername` parameter and adds it
+     * to the `words` array.
+     * 
+     * @param string fathername Patronymic
      * @return NCLNameCaseCore
      */
     setFatherName(fathername = '') {
@@ -333,12 +377,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Всем словам устанавливается пол, который может иметь следующие значения
-     * - 0 - не определено
-     * - NCL::$MAN - мужчина
-     * - NCL::$WOMAN - женщина
-     * @param int $gender пол, который нужно установить
+     * Sets the gender for all words provided in `this.words`, using these values:
+     * - 0 - not determined
+     * - NCL.MAN (masculine)
+     * - NCL.WOMAN (feminine)
+     * 
+     * @param int gender
      * @return NCLNameCaseCore
+     * 
+     * @see NCL.MAN
+     * @see NCL.WOMAN
      */
     setGender(gender = 0) {
         for (var word of this.words) {
@@ -349,11 +397,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В система заносится сразу фамилия, имя, отчество
-     * @param string $secondName фамилия
-     * @param string $firstName имя
-     * @param string $fatherName отчество
+     * Sets the object state with the given parameters.
+     * 
+     * @param string secondName
+     * @param string firstName
+     * @param string fatherName Patronymic
      * @return NCLNameCaseCore
+     * 
+     * @see setFirstName
+     * @see setSecondName
+     * @see setFatherName
      */
     setFullName(secondName = '', firstName = '', fatherName = '') {
         this.setFirstName(firstName);
@@ -364,9 +417,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$firstname</var> и пометкой, что это имя
-     * @param string $firstname имя
+     * Creates a new instance of the `NCLNameCaseWord` including a `firstname` parameter and adds it
+     * to the `words` array.
+     * 
+     * @param string firstname
      * @return NCLNameCaseCore
      */
     setName(firstname = '') {
@@ -374,28 +428,41 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$secondname</var> и пометкой, что это фамилия
-     * @param string $secondname фамилия
+     * Creates a new instance of the `NCLNameCaseWord` including a `secondname` parameter, then adds it
+     * to the `words` array and sets flags indicating that the object is not ready and words have not
+     * yet been inflected.
+     * 
+     * @param string secondname
      * @return NCLNameCaseCore
+     * 
+     * @see setSecondName
      */
     setLastName(secondname = '') {
         return this.setSecondName(secondname);
     }
 
     /**
-     * В массив <var>$this->words</var> добавляется новый об’єкт класса NCLNameCaseWord
-     * со словом <var>$secondname</var> и пометкой, что это фамилия
-     * @param string $secondname фамилия
+     * An alias for the setLastName method.
+     * 
+     * @param string secondname
      * @return NCLNameCaseCore
+     * 
+     * @see setLastName
      */
     setSirName(secondname = '') {
         return this.setSecondName(secondname);
     }
 
     /**
-     * Если слово <var>$word</var> не идентифицировано, тогда определяется это имя, фамилия или отчество
-     * @param NCLNameCaseWord $word слово которое нужно идентифицировать
+     * A language's child class method.
+     * Analyze whether the anthroponym type was defined in the `word` parameter, if not, additional analysis
+     * will be performed to determine its type, which are:
+     * - Second Name
+     * - First Name
+     * - Patronymic
+     * 
+     * @param NCLNameCaseWord word
+     * @see detectNamePart
      */
     prepareNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -407,7 +474,12 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Проверяет все ли слова идентифицированы, если нет тогда для каждого определяется это имя, фамилия или отчество
+     * This method requires a language's child class method.
+     * Check whether all given words have been defined by anthroponym type, if not, then each word will be
+     * subjected to an additional analysis to determine the type:
+     * - Second Name
+     * - First Name
+     * - Patronymic
      */
     prepareAllNameParts() {
         for (var word of this.words) {
@@ -416,8 +488,14 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Определяет пол для слова <var>$word</var>
-     * @param NCLNameCaseWord $word слово для которого нужно определить пол
+     * This method requires a language's child class method.
+     * Determines the gender of the anthroponym from the passed parameter `word`.
+     * 
+     * @param NCLNameCaseWord word The word for which to determine the gender
+     * 
+     * @see GenderByFirstName
+     * @see GenderByFatherName
+     * @see GenderBySecondName
      */
     prepareGender(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -440,12 +518,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Для всех слов проверяет определен ли пол, если нет - определяет его
-     * После этого расчитывает пол для всех слов и устанавливает такой пол всем словам
-     * @return bool был ли определен пол
+     * Check whether all given words have been defined by anthroponym gender, if not, then each word will be
+     * subjected to an additional analysis to determine the gender:
+     * - 0 - not determined
+     * - NCL.MAN (masculine)
+     * - NCL.WOMAN (feminine)
+     * 
+     * @return bool Was the gender determined
      */
     solveGender() {
-        // Ищем, может гдето пол уже установлен
+        // Does the gender is already determined somewhere
         for (var word of this.words) {
             if (word.isGenderSolved()) {
                 this.setGender(word.gender());
@@ -453,7 +535,7 @@ export default class NCLNameCaseCore extends NCL {
             }
         }
 
-        // Если нет тогда определяем у каждого слова и потом сумируем
+        // If not, then determine each word and then sum it up
         var man = 0;
         var woman = 0;
 
@@ -475,10 +557,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Генерируется массив, который содержит информацию о том какие слова из массива <var>$this->words</var> относятся к
-     * фамилии, какие к отчеству а какие к имени. Массив нужен потому, что при добавлении слов мы не
-     * всегда знаем какая часть ФИО сейчас, поэтому после идентификации всех слов генерируется массив
-     * индексов для быстрого поиска в дальнейшем.
+     * Initializes a cache with three types of anthroponyms, each containing a separate array.
+     * Each array, like a relational structure, contains an identifier that points to a specific index from
+     * the `this.words`. Thus, this cache indicates the type of anthroponym that will contribute to the quick
+     * search for the necessary type in further work.
+     * 
+     * The anthroponym types:
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
      */
     generateIndex() {
         this.index = { 'N': [], 'S': [], 'F': [] };
@@ -491,9 +578,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Выполнет все необходимые подготовления для склонения.
-     * Все слова идентфицируются. Определяется пол.
-     * Обновляется индекс.
+     * Executes the initialization scenario for declension and sets the ready flag.
+     * Performs the following steps:
+     * - according to the entered parameters, analyzes their anthroponym types (name, surname, patronymic)
+     * - analyzes and establishes the gender of an anthroponym (masculine, feminine)
+     * - update the indexes in the cache
+     * - sets the instance to the ready state
+     * 
+     * @see prepareAllNameParts
+     * @see solveGender
+     * @see generateIndex
      */
     prepareEverything() {
         if (!this.ready) {
@@ -505,11 +599,14 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * По указаным словам определяется пол человека:
-     * - 0 - не определено
-     * - NCL::$MAN - мужчина
-     * - NCL::$WOMAN - женщина
-     * @return int текущий пол человека
+     * Executes the initialization scenario for declension, determines and returns the anthroponym gender:
+     * - 0 - not determined
+     * - NCL.MAN (masculine)
+     * - NCL.WOMAN (feminine)
+     * 
+     * @return int A gender
+     * 
+     * @see prepareEverything
      */
     genderAutoDetect() {
         this.prepareEverything();
@@ -546,13 +643,12 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Разбивает строку <var>$fullname</var> на слова и возвращает формат в котором записано имя
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $fullname строка, для которой необходимо определить формат
-     * @return array формат в котором записано имя массив типа <var>$this->words</var>
+     * Splits the `fullname` into anthroponym parts and inflects them.
+     * 
+     * @param string fullname "LastName FirstName Patronymic"
+     * @return array An array of `NCLNameCaseWord`
+     * 
+     * @see prepareEverything
      */
     splitFullName(fullname) {
         fullname = trim(fullname);
@@ -573,13 +669,12 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Разбивает строку <var>$fullname</var> на слова и возвращает формат в котором записано имя
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $fullname строка, для которой необходимо определить формат
-     * @return string формат в котором записано имя
+     * Splits the `fullname` into anthroponym parts, inflects them, and returns formatted anthroponym.
+     * 
+     * @param string fullname "LastName FirstName Patronymic"
+     * @return string Formatted anthroponym
+     * 
+     * @see splitFullName
      */
     getFullNameFormat(fullname) {
         this.fullReset();
@@ -594,8 +689,8 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет слово <var>$word</var> по нужным правилам в зависимости от пола и типа слова
-     * @param NCLNameCaseWord $word слово, которое нужно просклонять
+     * Inflects the `word` according to gender and the anthroponym type.
+     * @param NCLNameCaseWord word An anthroponym
      */
     WordCase(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -621,10 +716,10 @@ export default class NCLNameCaseCore extends NCL {
         if (typeof this[method] != 'function')
             throw new Exception('Method ' + method + ' not found');
 
-        // если фамилия из 2х слов через дефис
+        // if the last name is 2 words with a hyphen
         // http://new.gramota.ru/spravka/buro/search-answer?s=273912
 
-        // разбиваем слово с дефисами на части
+        // split the word with hyphens into chunks
         var tmp = word.getWordOrig();
         var cur_words = explode('-', tmp);
         var o_cur_words = [];
@@ -639,8 +734,8 @@ export default class NCLNameCaseCore extends NCL {
 
             var o_ncw = new NCLNameCaseWord(cur_word);
             if (name_part_letter == 'S' && cnt > 1 && k < cnt - 1) {
-                // если первая часть фамилии тоже фамилия, то склоняем по общим правилам
-                // иначе не склоняется
+                // If the first part of the Surname is also a Surname, then inflect it
+                // according to the general rules, otherwise, it can not be inflected
 
                 var exclusion = ['тулуз']; // исключения
                 var cur_word_ = mb_strtolower(cur_word);
@@ -664,14 +759,14 @@ export default class NCLNameCaseCore extends NCL {
 
             if (is_norm_rules && this[method]()) {
 
-                // склоняется
+                // can be inflected
 
                 var result_tmp = this.lastResult;
                 last_rule = this.lastRule;
 
             } else {
 
-                // не склоняется. Заполняем что есть
+                // Can not be inflected. Fill all we have
 
                 result_tmp = array_fill(0, this.CaseCount, cur_word);
                 last_rule = -1;
@@ -682,7 +777,7 @@ export default class NCLNameCaseCore extends NCL {
             o_cur_words.push(o_ncw);
         }
 
-        // объединение пачку частей слова в одно слово по каждому падежу
+        // combining a bunch of word parts into one word for each case
         for (var o_ncw of o_cur_words) {
             var namecases = o_ncw.getNameCases();
 
@@ -694,13 +789,17 @@ export default class NCLNameCaseCore extends NCL {
             }
         }
 
-        // устанавливаем падежи для целого слова
+        // set cases for the whole word
         word.setNameCases(result, false);
         word.setRule(last_rule);
     }
 
     /**
-     * Производит склонение всех слов, который хранятся в массиве <var>$this->words</var>
+     * Initializes the declension state, inflects all words stored in the `this.words`,
+     * and sets a `finished` flag.
+     * 
+     * @see prepareEverything
+     * @see WordCase
      */
     AllWordCases() {
         if (!this.finished) {
@@ -715,11 +814,13 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Если указан номер падежа <var>$number</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param NCLNameCaseWord $word слово для котрого нужно вернуть падеж
-     * @param int $number номер падежа, который нужно вернуть
-     * @return mixed массив или строка с нужным падежом
+     * Returns an array or a string with the necessary inflection case.
+     * If the `number` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param NCLNameCaseWord word The word for which we need to return the case
+     * @param int number The inflection case number
+     * @return mixed An array or a string with the necessary inflected case
      */
     getWordCase(/*NCLNameCaseWord*/ word, number = null) {
         if (!(word instanceof NCLNameCaseWord))
@@ -735,11 +836,11 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Если нужно было просклонять несколько слов, то их необходимо собрать в одну строку.
-     * Эта функция собирает все слова указаные в <var>$indexArray</var>  в одну строку.
-     * @param array $indexArray индексы слов, которые необходимо собрать вместе
-     * @param int $number номер падежа
-     * @return mixed либо массив со всеми падежами, либо строка с одним падежом
+     * Collects all the specified words in `indexArray` into one string.
+     * 
+     * @param array indexArray The indexes of the word that are necessary to be collected together
+     * @param int number The case number
+     * @return mixed Either an array with all cases, or a string with one case
      */
     getCasesConnected(indexArray, number = null) {
         var readyArr = {};
@@ -751,7 +852,7 @@ export default class NCLNameCaseCore extends NCL {
         if (all) {
             if (is_array(readyArr[0])) {
 
-                // Масив нужно скелить каждый падеж
+                // Glue each case
 
                 var resultArr = [];
                 for (var kase = 0; kase < this.CaseCount; kase++) {
@@ -775,12 +876,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит имя в нужный падеж.
+     * Starts `AllWordCases` scenario and sets the name to the appropriate case.
+     * If the `number` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
      *
-     * Если указан номер падежа <var>$number</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param int $number номер падежа
-     * @return mixed массив или строка с нужным падежом
+     * @param int number Case number
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see AllWordCases
+     * @see getCasesConnected
      */
     getFirstNameCase(number = null) {
         this.AllWordCases();
@@ -788,12 +892,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит фамилию в нужный падеж.
-     *
-     * Если указан номер падежа <var>$number</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param int $number номер падежа
-     * @return mixed массив или строка с нужным падежом
+     * Starts `AllWordCases` scenario and sets the surname to the appropriate case.
+     * If the `number` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param int number Case number
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see AllWordCases
+     * @see getCasesConnected
      */
     getSecondNameCase(number = null) {
         this.AllWordCases();
@@ -801,12 +908,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит отчество в нужный падеж.
-     *
-     * Если указан номер падежа <var>$number</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param int $number номер падежа
-     * @return mixed массив или строка с нужным падежом
+     * Starts `AllWordCases` scenario and sets the patronymic to the appropriate case.
+     * If the `number` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param int number Case number
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see AllWordCases
+     * @see getCasesConnected
      */
     getFatherNameCase(number = null) {
         this.AllWordCases();
@@ -814,14 +924,19 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит имя <var>$firstName</var> в нужный падеж <var>$CaseNumber</var> по правилам пола <var>$gender</var>.
-     *
-     * Если указан номер падежа <var>$CaseNumber</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param string $firstName имя, которое нужно просклонять
-     * @param int $CaseNumber номер падежа
-     * @param int $gender пол, который нужно использовать
-     * @return mixed массив или строка с нужным падежом
+     * Inflects the `firstName` according to its `gender` and the anthroponym type.
+     * If the `CaseNumber` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param string firstName The First Name to inflect
+     * @param int CaseNumber Case number
+     * @param int gender In which the gender form should be inflected: Masculine|Feminine
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see fullReset
+     * @see setFirstName
+     * @see setGender
+     * @see getFirstNameCase
      */
     qFirstName(firstName, CaseNumber = null, gender = 0) {
         this.fullReset();
@@ -835,14 +950,19 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит фамилию <var>$secondName</var> в нужный падеж <var>$CaseNumber</var> по правилам пола <var>$gender</var>.
-     *
-     * Если указан номер падежа <var>$CaseNumber</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param string $secondName фамилия, которую нужно просклонять
-     * @param int $CaseNumber номер падежа
-     * @param int $gender пол, который нужно использовать
-     * @return mixed массив или строка с нужным падежом
+     * Inflects the `secondName` according to its `gender` and the anthroponym type.
+     * If the `CaseNumber` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param string secondName The Second Name to inflect
+     * @param int CaseNumber Case number
+     * @param int gender In which the gender form should be inflected: Masculine|Feminine
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see fullReset
+     * @see setSecondName
+     * @see setGender
+     * @see getSecondNameCase
      */
     qSecondName(secondName, CaseNumber = null, gender = 0) {
         this.fullReset();
@@ -856,14 +976,19 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Функция ставит отчество <var>$fatherName</var> в нужный падеж <var>$CaseNumber</var> по правилам пола <var>$gender</var>.
-     *
-     * Если указан номер падежа <var>$CaseNumber</var>, тогда возвращается строка с таким номером падежа,
-     * если нет, тогда возвращается массив со всеми падежами текущего слова.
-     * @param string $fatherName отчество, которое нужно просклонять
-     * @param int $CaseNumber номер падежа
-     * @param int $gender пол, который нужно использовать
-     * @return mixed массив или строка с нужным падежом
+     * Inflects the `fatherName` according to its `gender` and the anthroponym type.
+     * If the `CaseNumber` is specified, then a string according to its case number will returned,
+     * otherwise, an array with all cases of the current word is returned.
+     * 
+     * @param string fatherName The Patronymic to inflect
+     * @param int CaseNumber Case number
+     * @param int gender In which the gender form should be inflected: Masculine|Feminine
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see fullReset
+     * @see setFatherName
+     * @see setGender
+     * @see getFatherNameCase
      */
     qFatherName(fatherName, CaseNumber = null, gender = 0) {
         this.fullReset();
@@ -877,13 +1002,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет текущие слова во все падежи и форматирует слово по шаблону <var>$format</var>
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $format строка формат
-     * @return array массив со всеми падежами
+     * Inflects the current words in all cases and formats the word according to the `format` template.
+     * 
+     * **Format:**
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
+     * 
+     * @param string format A template "S N F" | "N S F" | "N S"
+     * @return array An array with all cases
      */
     getFormattedArray(format) {
         if (is_array(format)) {
@@ -922,13 +1049,15 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет текущие слова во все падежи и форматирует слово по шаблону <var>$format</var>
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param array $format массив с форматом
-     * @return array массив со всеми падежами
+     * Inflects the current words in all cases and formats the word according to the `format` template.
+     * 
+     * **Format:**
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
+     * 
+     * @param array format An array with format template
+     * @return array An array with formatted anthroponym
      */
     getFormattedArrayHard(format) {
         var result = [];
@@ -952,13 +1081,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет текущие слова в падеж <var>$caseNum</var> и форматирует слово по шаблону <var>$format</var>
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param array $format массив с форматом
-     * @return string строка в нужном падеже
+     * Inflects the current words by the `caseNum` and formats the word according to the `format` templates.
+     * 
+     * **Format:**
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
+     * 
+     * @param int caseNum Case number
+     * @param array format An array with format template
+     * @return string A formatted anthroponym
      */
     getFormattedHard(caseNum = 0, format = []) {
         var result = '';
@@ -972,23 +1104,26 @@ export default class NCLNameCaseCore extends NCL {
     };
 
     /**
-     * Склоняет текущие слова в падеж <var>$caseNum</var> и форматирует слово по шаблону <var>$format</var>
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $format строка с форматом
-     * @return string строка в нужном падеже
+     * Inflects the current words by the `caseNum` and formats the word according to the `format` template.
+     * 
+     * **Format:**
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
+     * 
+     * @param int caseNum Case number
+     * @param string format A template "S N F" | "N S F" | "N S"
+     * @return string A formatted anthroponym
      */
     getFormatted(caseNum = 0, format = 'S N F') {
         this.AllWordCases();
 
-        // Если не указан падеж используем другую функцию
+        // If the case is not specified, then use the another method
         if (is_null(caseNum) || !caseNum) {
             return this.getFormattedArray(format);
         }
 
-        // Если формат сложный
+        // If format is complicated
         else if (is_array(format)) {
 
             return this.getFormattedHard(caseNum, format);
@@ -1015,19 +1150,27 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет фамилию <var>$secondName</var>, имя <var>$firstName</var>, отчество <var>$fatherName</var>
-     * в падеж <var>$caseNum</var> по правилам пола <var>$gender</var> и форматирует результат по шаблону <var>$format</var>
-     * <b>Формат:</b>
-     * - S - Фамилия
-     * - N - Имя
-     * - F - Отчество
-     * @param string $secondName фамилия
-     * @param string $firstName имя
-     * @param string $fatherName отчество
-     * @param int $gender пол
-     * @param int $caseNum номер падежа
-     * @param string $format формат
-     * @return mixed либо массив со всеми падежами, либо строка
+     * Inflects the anthroponym according to the `caseNum`, `gender`, and its type returning
+     * the formatted anthroponym by specified `format`.
+     * 
+     * **Format:**
+     * - S - Surname (Second Name)
+     * - N - Name (First Name)
+     * - F - Father's Name (Patronymic)
+     * 
+     * @param string secondName Second Name
+     * @param string firstName First Name
+     * @param string fatherName Patronymic
+     * @param int gender Genus
+     * @param int caseNum Case number
+     * @param string format A template "S N F" | "N S F" | "N S"
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see setFirstName
+     * @see setSecondName
+     * @see setFatherName
+     * @see setGender
+     * @see getFormatted
      */
     qFullName(secondName = '', firstName = '', fatherName = '', gender = 0, caseNum = 0, format = 'S N F') {
         this.fullReset();
@@ -1043,12 +1186,17 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Склоняет ФИО <var>$fullname</var> в падеж <var>$caseNum</var> по правилам пола <var>$gender</var>.
-     * Возвращает результат в таком же формате, как он и был.
-     * @param string $fullname ФИО
-     * @param int $caseNum номер падежа
-     * @param int $gender пол человека
-     * @return mixed либо массив со всеми падежами, либо строка
+     * Inflects the anthroponym based on the specified `caseNum`, `gender`, and type, while preserving
+     * the original ordering.
+     * 
+     * @param string fullname "SecondName FirstName Patronymic"
+     * @param int caseNum Case number
+     * @param int gender Genus
+     * @return mixed An array or a string with the necessary inflected case
+     * 
+     * @see splitFullName
+     * @see setGender
+     * @see getFormatted
      */
     q(fullname, caseNum = null, gender = null) {
         this.fullReset();
@@ -1061,9 +1209,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Определяет пол человека по ФИО
-     * @param string $fullname ФИО
-     * @return int пол человека
+     * Determines the genus according to the specified `fullname`.
+     * 
+     * @param string fullname "SecondName FirstName Patronymic"
+     * @return int The Genus
      */
     genderDetect(fullname) {
         this.fullReset();
@@ -1073,64 +1222,78 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Возвращает внутренний массив $this->words каждая запись имеет тип NCLNameCaseWord
-     * @return array Массив всех слов в системе
+     * Returns the private internal attribute `this.words`.
+     * @return array An array of NCLNameCaseWord
      */
     getWordsArray() {
         return this.words;
     }
 
     /**
-     * Функция пытается применить цепочку правил для мужских имен
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the male name.
+     * 
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     manFirstName() {
         return false;
     }
 
     /**
-     * Функция пытается применить цепочку правил для женских имен
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the female name.
+     * 
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     womanFirstName() {
         return false;
     }
 
     /**
-     * Функция пытается применить цепочку правил для мужских фамилий
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the male surname.
+     * 
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     manSecondName() {
         return false;
     }
 
     /**
-     * Функция пытается применить цепочку правил для женских фамилий
-     * @return boolean true - если было использовано правило из списка, false - если правило не было найденым
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the female surname.
+     * 
+     * @return boolean true - if the rule from the list was used, false - if the rule was not found
      */
     womanSecondName() {
         return false;
     }
 
     /**
-     * Функция склоняет мужский отчества
-     * @return boolean true - если слово было успешно изменено, false - если не получилось этого сделать
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the male patronymic.
+     * 
+     * @return boolean true - if the word was successfully inflected; false - otherwise
      */
     manFatherName() {
         return false;
     }
 
     /**
-     * Функция склоняет женские отчества
-     * @return boolean true - если слово было успешно изменено, false - если не получилось этого сделать
+     * A language's child class method.
+     * Attempts to apply a sequence of rules for the female patronymic.
+     * 
+     * @return boolean true - if the word was successfully inflected; false - otherwise
      */
     womanFatherName() {
         return false;
     }
 
     /**
-     * Определение пола по правилам имен
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * A language's child class method.
+     * Determination of gender according to the rules of names.
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderByFirstName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -1138,8 +1301,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Определение пола по правилам фамилий
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * A language's child class method.
+     * Determination of gender according to the rules of surname.
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderBySecondName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -1147,8 +1312,10 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Определение пола по правилам отчеств
-     * @param NCLNameCaseWord $word обьект класса слов, для которого нужно определить пол
+     * A language's child class method.
+     * Determination of gender according to the rules of patronymic.
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring gender determination
      */
     GenderByFatherName(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -1156,11 +1323,13 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Идетифицирует слово определяе имя это, или фамилия, или отчество
-     * - <b>N</b> - имя
-     * - <b>S</b> - фамилия
-     * - <b>F</b> - отчество
-     * @param NCLNameCaseWord $word обьект класса слов, который необходимо идентифицировать
+     * A language's child class method.
+     * Analyzing the `word` and determining its anthroponym by Name, Surname, and Patronymic.
+     * - **N** - Name (First Name)
+     * - **S** - Surname (Second Name)
+     * - **F** - Father's Name (Patronymic)
+     * 
+     * @param NCLNameCaseWord word An object belonging to the class of words requiring determination
      */
     detectNamePart(/*NCLNameCaseWord*/ word) {
         if (!(word instanceof NCLNameCaseWord))
@@ -1168,16 +1337,16 @@ export default class NCLNameCaseCore extends NCL {
     }
 
     /**
-     * Возвращает версию библиотеки
-     * @return string версия библиотеки
+     * Returns the version of the library.
+     * @return string the version of the library
      */
     version() {
         return this._version;
     }
 
     /**
-     * Возвращает версию использованого языкового файла
-     * @return string версия языкового файла
+     * Returns the version of the used language file.
+     * @return string Version of the language file
      */
     languageVersion() {
         return this._languageBuild;

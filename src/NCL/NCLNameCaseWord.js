@@ -4,10 +4,6 @@
  */
 
 const NCL = require('./NCL.js');
-const NCLStr = require('./NCLStr.js');
-
-const math_min = require('locutus/php/math/min');
-const math_max = require('locutus/php/math/max');
 
 /**
  * NCLNameCaseWord
@@ -100,7 +96,7 @@ class NCLNameCaseWord {
 
         this.word_orig = word;
         this.generateMask(word);
-        this.word = NCLStr.strtolower(word);
+        this.word = word.toLowerCase();
     }
 
     /**
@@ -110,12 +106,12 @@ class NCLNameCaseWord {
      * @param string word The word for which to generate the mask
      */
     generateMask(word) {
-        var letters = NCLStr.splitLetters(word);
+        var letters = word.split('');
         var mask = [];
         this.isUpperCase = true;
 
         for (var letter of letters) {
-            if (NCLStr.isLowerCase(letter)) {
+            if (letter === letter.toLowerCase()) {
 
                 mask.push('x');
                 this.isUpperCase = false;
@@ -140,7 +136,7 @@ class NCLNameCaseWord {
 
             for (var index in this.NameCases) {
                 var kase = this.NameCases[index];
-                this.NameCases[index] = NCLStr.strtoupper(this.NameCases[index]);
+                this.NameCases[index] = this.NameCases[index].toUpperCase();
             }
 
         } else {
@@ -150,22 +146,21 @@ class NCLNameCaseWord {
 
             for (var index in this.NameCases) {
                 var kase = this.NameCases[index];
-                var caseLength = NCLStr.strlen(kase);
-                var max = math_min([caseLength, maskLength]);
+                var min = Math.min(kase.length, maskLength);
 
                 this.NameCases[index] = '';
 
-                for (var letterIndex = 0; letterIndex < max; letterIndex++) {
-                    var letter = NCLStr.substr(kase, letterIndex, 1);
+                for (var letterIndex = 0; letterIndex < min; letterIndex++) {
+                    var letter = kase.slice(letterIndex, letterIndex + 1);
 
                     if (splitedMask[letterIndex] == 'X') {
-                        letter = NCLStr.strtoupper(letter);
+                        letter = letter.toUpperCase();
                     }
 
                     this.NameCases[index] += letter;
                 }
 
-                this.NameCases[index] += NCLStr.substr(kase, max, caseLength - maskLength);
+                this.NameCases[index] += kase.slice(min, min + (kase.length - maskLength));
             }
 
         }

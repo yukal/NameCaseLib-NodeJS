@@ -4,21 +4,7 @@
  */
 
 const NCL = require('./NCL.js');
-const NCLStr = require('./NCLStr.js');
 const NCLNameCaseWord = require('./NCLNameCaseWord.js');
-
-var math_min = require('locutus/php/math/min');
-var math_max = require('locutus/php/math/max');
-var mb_strtolower = require('locutus/php/strings/strtolower');
-var explode = require('locutus/php/strings/explode');
-var implode = require('locutus/php/strings/implode');
-var trim = require('locutus/php/strings/trim');
-var is_null = require('locutus/php/var/is_null');
-var is_array = require('locutus/php/var/is_array');
-var array_fill = require('locutus/php/array/array_fill');
-var in_array = require('locutus/php/array/in_array');
-var array_key_exists = require('locutus/php/array/array_key_exists'),
-    key_exists = array_key_exists;
 
 /**
  * **NCL NameCase Core**
@@ -182,7 +168,7 @@ class NCLNameCaseCore extends NCL {
      * If there is no need to inflect a word, then set the result to the same as the nominative case.
      */
     makeResultTheSame() {
-        this.lastResult = array_fill(0, this.CaseCount, this.workingWord);
+        this.lastResult = Array(this.CaseCount).fill(this.workingWord);
     }
 
     /**
@@ -203,17 +189,15 @@ class NCLNameCaseCore extends NCL {
      * @return string Portion of string from the right side
      */
     Last(length = 1, stopAfter = 0) {
-        if (!stopAfter) {
-            var cut = length;
-        } else {
-            cut = stopAfter;
-        }
+        var cut = stopAfter > 0
+            ? this.workingWord.length - length + stopAfter
+            : undefined;
 
         // Check the cache
         if (this.workindLastCache[length] == undefined)
             this.workindLastCache[length] = [];
         if (this.workindLastCache[length][stopAfter] == undefined) {
-            this.workindLastCache[length][stopAfter] = NCLStr.substr(this.workingWord, -length, cut);
+            this.workindLastCache[length][stopAfter] = this.workingWord.slice(-length, cut);
         }
 
         return this.workindLastCache[length][stopAfter];
@@ -260,22 +244,7 @@ class NCLNameCaseCore extends NCL {
      * @return bool True if the required value is found
      */
     in(letter, string) {
-        // If an array was passed as the second parameter
-        if (is_array(string)) {
-
-            return in_array(letter, string);
-
-        } else {
-            if (!letter || NCLStr.strpos(string, letter) === false) {
-
-                return false;
-
-            } else {
-
-                return true;
-
-            }
-        }
+        return letter && string.includes(letter);
     }
 
     /**
@@ -285,12 +254,12 @@ class NCLNameCaseCore extends NCL {
      * @param array names A list of names in which to find a name
      */
     inNames(nameNeedle, names) {
-        if (!is_array(names)) {
+        if (!Array.isArray(names)) {
             names = [names];
         }
 
         for (var name of names) {
-            if (NCLStr.strtolower(nameNeedle) == NCLStr.strtolower(name)) {
+            if (nameNeedle.toLowerCase() == name.toLowerCase()) {
                 return true;
             }
         }
@@ -311,7 +280,7 @@ class NCLNameCaseCore extends NCL {
         var result = [this.workingWord];
 
         // Remove the extra letters at the end
-        word = NCLStr.substr(word, 0, NCLStr.strlen(word) - replaceLast);
+        word = word.substring(0, word.length - replaceLast);
 
         // Add endings
         for (var padegIndex = 1; padegIndex < this.CaseCount; padegIndex++) {
@@ -622,8 +591,8 @@ class NCLNameCaseCore extends NCL {
             for (var k in this.words) {
                 var word = this.words[k];
                 var genders = word.getGender();
-                var min = math_min(genders);
-                var max = math_max(genders);
+                var min = Math.min(...genders);
+                var max = Math.max(...genders);
                 var koef = max - min;
                 if (koef > max_koef) {
                     max_koef = koef;
@@ -634,8 +603,8 @@ class NCLNameCaseCore extends NCL {
             if (n >= 0) {
                 if (this.words[n]) {
                     genders = this.words[n].getGender();
-                    min = math_min(genders);
-                    max = math_max(genders);
+                    min = Math.min(...genders);
+                    max = Math.max(...genders);
                     this.gender_koef = max - min;
 
                     return this.words[n].gender();
@@ -727,12 +696,13 @@ class NCLNameCaseCore extends NCL {
 
         // split the word with hyphens into chunks
         var tmp = word.getWordOrig();
-        var cur_words = explode('-', tmp);
+        var cur_words = tmp.split('-');
         var o_cur_words = [];
 
         var result = {};
         var last_rule = -1;
         var cnt = cur_words.length;
+        var result_tmp = this.lastResult;
 
         for (var k in cur_words) {
             var cur_word = cur_words[k];
@@ -744,9 +714,8 @@ class NCLNameCaseCore extends NCL {
                 // according to the general rules, otherwise, it can not be inflected
 
                 var exclusion = ['тулуз']; // исключения
-                var cur_word_ = mb_strtolower(cur_word);
 
-                if (!in_array(cur_word_, exclusion)) {
+                if (!exclusion.includes(cur_word.toLowerCase())) {
 
                     var cls = NCL.getConcreteClass('ru');
                     var o_nc = new cls();
@@ -767,14 +736,14 @@ class NCLNameCaseCore extends NCL {
 
                 // can be inflected
 
-                var result_tmp = this.lastResult;
+                result_tmp = this.lastResult;
                 last_rule = this.lastRule;
 
             } else {
 
                 // Can not be inflected. Fill all we have
 
-                result_tmp = array_fill(0, this.CaseCount, cur_word);
+                result_tmp = Array(this.CaseCount).fill(cur_word);
                 last_rule = -1;
 
             }
@@ -790,8 +759,11 @@ class NCLNameCaseCore extends NCL {
             for (var k in namecases) {
                 var namecase = namecases[k];
 
-                if (key_exists(k, result)) result[k] = result[k] + '-' + namecase;
-                else result[k] = namecase;
+                if (result.hasOwnProperty(k)) {
+                    result[k] = result[k] + '-' + namecase;
+                } else {
+                    result[k] = namecase;
+                }
             }
         }
 
@@ -835,11 +807,8 @@ class NCLNameCaseCore extends NCL {
 
         var cases = word.getNameCases();
 
-        if (is_null(number) || number < 0 || number > (this.CaseCount - 1)) {
-            return cases;
-        } else {
-            return cases[number];
-        }
+        return number < 0 || number > (this.CaseCount - 1)
+            ? cases : cases[number];
     }
 
     /**
@@ -857,7 +826,7 @@ class NCLNameCaseCore extends NCL {
 
         var all = readyArr.length;
         if (all) {
-            if (is_array(readyArr[0])) {
+            if (Array.isArray(readyArr[0])) {
 
                 // Glue each case
 
@@ -867,14 +836,14 @@ class NCLNameCaseCore extends NCL {
                     for (var i = 0; i < all; i++) {
                         tmp.push(readyArr[i][kase]);
                     }
-                    resultArr[kase] = implode(' ', tmp);
+                    resultArr[kase] = tmp.join(' ');
                 }
 
                 return resultArr;
 
             } else {
 
-                return implode(' ', readyArr);
+                return readyArr.join(' ');
 
             }
         }
@@ -1020,11 +989,11 @@ class NCLNameCaseCore extends NCL {
      * @return array An array with all cases
      */
     getFormattedArray(format) {
-        if (is_array(format)) {
+        if (Array.isArray(format)) {
             return this.getFormattedArrayHard(format);
         }
 
-        var length = NCLStr.strlen(format);
+        var length = format.length;
         var result = [];
         var cases = {};
 
@@ -1036,7 +1005,7 @@ class NCLNameCaseCore extends NCL {
             var line = '';
 
             for (var i = 0; i < length; i++) {
-                var symbol = NCLStr.substr(format, i, 1);
+                var symbol = format.substring(i, i + 1);
 
                 if (symbol == 'S') {
                     line += cases['S'][curCase];
@@ -1081,7 +1050,7 @@ class NCLNameCaseCore extends NCL {
                 line += value[curCase] + ' ';
             }
 
-            result.push(trim(line));
+            result.push(line.trim());
         }
 
         return result;
@@ -1107,7 +1076,7 @@ class NCLNameCaseCore extends NCL {
             result += cases[caseNum] + ' ';
         }
 
-        return trim(result);
+        return result.trim();
     };
 
     /**
@@ -1126,21 +1095,21 @@ class NCLNameCaseCore extends NCL {
         this.AllWordCases();
 
         // If the case is not specified, then use the another method
-        if (is_null(caseNum) || !caseNum) {
+        if (caseNum == null || !caseNum) {
             return this.getFormattedArray(format);
         }
 
         // If format is complicated
-        else if (is_array(format)) {
+        else if (Array.isArray(format)) {
 
             return this.getFormattedHard(caseNum, format);
 
         } else {
-            var length = NCLStr.strlen(format);
+            var length = format.length;
             var result = '';
 
             for (var i = 0; i < length; i++) {
-                var symbol = NCLStr.substr(format, i, 1);
+                var symbol = format.slice(i, i + 1);
 
                 if (symbol == 'S') {
                     result += this.getSecondNameCase(caseNum);

@@ -5,10 +5,6 @@
 
 const NCLNameCaseCore = require('./NCL/NCLNameCaseCore.js');
 const NCLNameCaseWord = require('./NCL/NCLNameCaseWord.js');
-const NCLStr = require('./NCL/NCLStr.js');
-
-const math_min = require('locutus/php/math/min');
-const math_max = require('locutus/php/math/max');
 
 /**
  * **NCL NameCase Russian Language**
@@ -770,7 +766,7 @@ class NCLNameCaseRu extends NCLNameCaseCore {
         }
 
         var namepart = word.getWord();
-        var length = NCLStr.strlen(namepart);
+        var length = namepart.length;
         this.setWorkingWord(namepart);
 
         // Compute the probability of coincidence
@@ -933,7 +929,7 @@ class NCLNameCaseRu extends NCLNameCaseCore {
             second += 10;
         }
 
-        var max = math_max([first, second, father]);
+        var max = Math.max(first, second, father);
 
         if (first == max) {
             word.setNamePart('N');

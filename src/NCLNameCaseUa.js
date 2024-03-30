@@ -5,10 +5,6 @@
 
 const NCLNameCaseCore = require('./NCL/NCLNameCaseCore.js');
 const NCLNameCaseWord = require('./NCL/NCLNameCaseWord.js');
-const NCLStr = require('./NCL/NCLStr.js');
-
-const math_min = require('locutus/php/math/min');
-const math_max = require('locutus/php/math/max');
 
 /**
  * **NCL NameCase Ukranian Language**
@@ -160,26 +156,24 @@ class NCLNameCaseUa extends NCLNameCaseCore {
      */
     detect2Group(word) {
         var osnova = word;
-        var stack = [];
+        var endingChars = this.vowels + 'ь';
+        var wordEnd = '';
 
         // Cut the word until we encounter a consonant and push all vowels encountered onto the stack
-        while (this.in(NCLStr.substr(osnova, -1, 1), this.vowels + 'ь')) {
-            stack.push(NCLStr.substr(osnova, -1, 1));
-            osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 1);
+        while (endingChars.includes(osnova.slice(-1))) {
+            wordEnd = osnova.slice(-1) + wordEnd;
+            osnova = osnova.slice(0, -1);
         }
 
-        var stacksize = stack.length;
-        var Last = 'Z'; // zero termination
+        wordEnd = wordEnd.length
+            ? wordEnd.slice(-1)
+            : 'Z'; // zero termination
 
-        if (stacksize) {
-            Last = stack[stack.length - 1];
-        }
+        var osnovaEnd = osnova.slice(-1);
 
-        var osnovaEnd = NCLStr.substr(osnova, -1, 1);
-
-        if (this.in(osnovaEnd, this.neshyplyachi) && !this.in(Last, this.myaki)) {
+        if (this.neshyplyachi.includes(osnovaEnd) && !this.myaki.includes(wordEnd)) {
             return 1;
-        } else if (this.in(osnovaEnd, this.shyplyachi) && !this.in(Last, this.myaki)) {
+        } else if (this.shyplyachi.includes(osnovaEnd) && !this.myaki.includes(wordEnd)) {
             return 2;
         } else {
             return 3;
@@ -195,13 +189,11 @@ class NCLNameCaseUa extends NCLNameCaseCore {
      * @return string(1) The first letter from the end of the list of `vowels`
      */
     FirstLastVowel(word, vowels) {
-        var length = NCLStr.strlen(word);
+        var i = word.length - 1;
 
-        for (var i = length - 1; i > 0; i--) {
-            var char = NCLStr.substr(word, i, 1);
-
-            if (this.in(char, vowels)) {
-                return char;
+        for (; i > 0; i--) {
+            if (vowels.indexOf(word[i]) > -1) {
+                return word[i];
             }
         }
     }
@@ -214,14 +206,14 @@ class NCLNameCaseUa extends NCLNameCaseCore {
      * @return string основа іменника `word`
      */
     getOsnova(word) {
-        var osnova = word;
-        // Cut the word until we encounter a consonant
+        var endingChars = this.vowels + 'ь';
 
-        while (this.in(NCLStr.substr(osnova, -1, 1), this.vowels + 'ь')) {
-            osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 1);
+        while (endingChars.includes(word.slice(-1))) {
+            // Cut the word until we encounter a consonant
+            word = word.slice(0, -1);
         }
 
-        return osnova;
+        return word;
     }
 
     /**
@@ -292,8 +284,8 @@ class NCLNameCaseUa extends NCLNameCaseCore {
 
                 var osnova = this.workingWord;
 
-                if (NCLStr.substr(osnova, -2, 1) == 'і') {
-                    osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 2) + 'о' + NCLStr.substr(osnova, -1, 1);
+                if (osnova.slice(-2, -1) == 'і') {
+                    osnova = osnova.slice(0, -2) + 'о' + osnova.slice(-1);
                 }
 
                 this.wordForms(osnova, ['а', 'ові', 'а', 'ом', 'ові', 'е']);
@@ -327,24 +319,24 @@ class NCLNameCaseUa extends NCLNameCaseCore {
             // the vowel "і" only appears in the nominative case,
             // while in the oblique cases, it changes to "о": "Антона", "Антонові"
 
-            var osLast = NCLStr.substr(osnova, -1, 1);
+            var osLast = osnova.slice(-1);
             var invOsLast = this.inverse2(osLast);
 
-            if (osLast != 'й' && NCLStr.substr(osnova, -2, 1) == 'і'
-                && !this.in(NCLStr.substr(NCLStr.strtolower(osnova), -4, 4), ['світ', 'цвіт'])
+            if (osLast != 'й' && osnova.slice(-2, -1) == 'і'
+                && !this.in(osnova.toLowerCase().slice(-4), ['світ', 'цвіт'])
                 && !this.inNames(this.workingWord, 'Гліб')
                 && !this.in(this.Last(2), ['ік', 'іч'])) {
 
-                osnova = NCLStr.substr(osnova, 0, NCLStr.strlen(osnova) - 2) + 'о' + NCLStr.substr(osnova, -1, 1);
+                osnova = osnova.slice(0, -2) + 'о' + osnova.slice(-1);
             }
 
             // Loss of the letter "е" when declining words like "Орел"
-            if (NCLStr.substr(osnova, 0, 1) == 'о'
+            if (osnova[0].toLowerCase() == 'о'
                 && this.FirstLastVowel(osnova, this.vowels + 'гк') == 'е'
                 && this.Last(2) != 'сь') {
 
-                var delim = NCLStr.strrpos(osnova, 'е');
-                osnova = NCLStr.substr(osnova, 0, delim) + NCLStr.substr(osnova, delim + 1, NCLStr.strlen(osnova) - delim);
+                var delim = osnova.lastIndexOf('е');
+                osnova = osnova.slice(0, delim) + osnova.slice(delim + 1, -delim);
             }
 
             if (group == 1) {
@@ -399,7 +391,7 @@ class NCLNameCaseUa extends NCLNameCaseCore {
                 // "Соловей"
                 if (this.Last(2) == 'ей' && this.in(this.Last(3, 1), this.gubni)) {
 
-                    osnova = NCLStr.substr(this.workingWord, 0, NCLStr.strlen(this.workingWord) - 2) + '’';
+                    osnova = this.workingWord.slice(0, -2) + '’';
 
                     this.wordForms(osnova, ['я', 'єві', 'я', 'єм', 'єві', 'ю']);
                     this.Rule(306);
@@ -511,7 +503,7 @@ class NCLNameCaseUa extends NCLNameCaseCore {
 
         // The words ending in "ніга" -» "нога"
         if (this.Last(4) == 'ніга') {
-            var osnova = NCLStr.substr(this.workingWord, 0, NCLStr.strlen(this.workingWord) - 3) + 'о';
+            var osnova = this.workingWord.slice(0, -3) + 'о';
 
             this.wordForms(osnova, ['ги', 'зі', 'гу', 'гою', 'зі', 'го']);
             this.Rule(101);
@@ -562,8 +554,8 @@ class NCLNameCaseUa extends NCLNameCaseCore {
             var osnova = this.getOsnova(this.workingWord);
             var apostrof = '';
             var duplicate = '';
-            var osLast = NCLStr.substr(osnova, -1, 1);
-            var osBeforeLast = NCLStr.substr(osnova, -2, 1);
+            var osLast = osnova.slice(-1);
+            var osBeforeLast = osnova.slice(-2, -1);
 
             // Determines whether to put an apostrophe
             if (this.in(osLast, 'мвпбф') && this.in(osBeforeLast, this.vowels)) {
@@ -844,7 +836,7 @@ class NCLNameCaseUa extends NCLNameCaseCore {
             second += 0.2;
         }
 
-        var max = math_max([first, second, father]);
+        var max = Math.max(first, second, father);
 
         if (first == max) {
             word.setNamePart('N');

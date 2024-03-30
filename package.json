@@ -3,8 +3,13 @@
   "version": "0.0.4",
   "description": "A fork of NameCaseLib. Declension of ukrainian and russian surnames, first names, and patronymics.",
   "main": "index.js",
+  "directories": {
+    "src": "src",
+    "test": "test"
+  },
   "scripts": {
     "test": "node --test **/test*.js",
+    "coverage": "node --test --experimental-test-coverage ./test"
   },
   "keywords": [
     "declension",

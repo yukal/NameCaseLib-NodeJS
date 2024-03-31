@@ -1,4 +1,4 @@
-# declension-name
+# NameCaseLib-NodeJS
 
 Based on [NameCaseLib](https://github.com/seagullua/NameCaseLib) — PHP5 library intended for automatic declension of full names in Ukrainian and Russian languages.
 
